@@ -1,0 +1,35 @@
+{
+  "id": "L03_circle_radius_slider",
+  "description": "A complete parametric brief: a circle whose radius is driven by a slider; decomposition, discovery, two adds and a wire.",
+  "userPrompt": "Create a circle on the XY plane at the origin whose radius is driven by a number slider. Inputs: the radius, from 1 to 10 m (my numbers). Rule: the circle is always centred on the origin. Principle: a one-parameter column footprint. Evaluation: keep the footprint area at or below 50 m2; I will judge it by reading the area. Go ahead and build it.",
+  "canvas": "hermetic",
+  "expected": {
+    "terminalStatus": "Idle",
+    "decompositionComplete": true,
+    "decompositionInputsInclude": [
+      "radius"
+    ],
+    "canvasHasComponent": [
+      {
+        "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+        "min": 1
+      },
+      {
+        "anyOf": [
+          "807b86e3-be8d-4970-92b5-f8cdcb45b06b",
+          "d114323a-e6ee-4164-946b-e4ca0ce15efa"
+        ],
+        "min": 1
+      }
+    ],
+    "canvasHasWire": [
+      {
+        "from": "57da07bd-ecab-415d-9d86-af36d7073abc",
+        "toAnyOf": [
+          "807b86e3-be8d-4970-92b5-f8cdcb45b06b",
+          "d114323a-e6ee-4164-946b-e4ca0ce15efa"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "id": "32_galapagos_real_phenotype_TEMPLATE",
+  "description": "TEMPLATE FIXTURE — NOT RUNNABLE AS REAL SCENARIO. v0.8 spike post-work: replace every 'FILL AFTER SPIKE' string below with real values captured from section 5 row Q5 of docs/V0.8-SPIKE-GALAPAGOS.md, then rename this file to 32_galapagos_real_phenotype.json (drop the _TEMPLATE suffix). Until then, this fixture exercises only an inert end_turn path so the eval suite stays green. Real-phenotype assertions live in the toolHandlers.gh_galapagos_run.result block below, which is NOT invoked by the inert providerScript but documents the expected post-spike payload shape.",
+  "userPrompt": "TEMPLATE: replace this prompt after the spike with the real Galapagos run trigger, e.g. 'Run the staged Galapagos optimization for 20 generations.'",
+  "providerScript": [
+    {
+      "stopReason": "end_turn",
+      "interactions": [
+        { "kind": "text", "text": "TEMPLATE fixture — inert run. After the v0.8 Rhino spike ships, rewrite providerScript to exercise gh_galapagos_run against the phenotype payload drafted in toolHandlers below." }
+      ]
+    }
+  ],
+  "toolHandlers": {
+    "gh_galapagos_run": {
+      "result": {
+        "status": "FILL AFTER SPIKE (likely 'ok')",
+        "message": "FILL AFTER SPIKE — real solver completion message.",
+        "generations_run": 0,
+        "clamped_parameters": {
+          "max_generations": 20,
+          "population_size": 50,
+          "timeout_seconds": 300
+        },
+        "phenotypes": [
+          {
+            "_comment": "One entry per captured generation. Shape mirrors Parti.Core.Design.Phenotype (Rank, MetricValues, GenomeValues, ViewportScreenshotPath).",
+            "rank": 0,
+            "metricValues": {
+              "FILL AFTER SPIKE — metric_name_1": 0.0
+            },
+            "genomeValues": {
+              "FILL AFTER SPIKE — slider_name_1": 0.0,
+              "FILL AFTER SPIKE — slider_name_2": 0.0
+            },
+            "viewportScreenshotPath": null
+          },
+          {
+            "rank": 1,
+            "metricValues": {
+              "FILL AFTER SPIKE — metric_name_1": 0.0
+            },
+            "genomeValues": {
+              "FILL AFTER SPIKE — slider_name_1": 0.0,
+              "FILL AFTER SPIKE — slider_name_2": 0.0
+            },
+            "viewportScreenshotPath": null
+          }
+        ]
+      }
+    }
+  },
+  "expected": {
+    "finalStopReason": "end_turn",
+    "finalStatus": "Finished",
+    "providerCallCount": 1,
+    "toolCallCount": 0
+  }
+}

@@ -1,0 +1,16 @@
+[
+  { "query": "add a number slider and wire it into the radius input of my circle component", "should_trigger": true },
+  { "query": "connect the output of the Series component to the Move vector input", "should_trigger": true },
+  { "query": "these components are overlapping, lay them out in a clean left-to-right flow", "should_trigger": true },
+  { "query": "drop a panel showing the values coming out of the division component", "should_trigger": true },
+  { "query": "group the four components that make the facade grid and give the group a label", "should_trigger": true },
+  { "query": "build a grid of points from two sliders for the U and V counts", "should_trigger": true },
+  { "query": "delete the unused Construct Point and reconnect its inputs to the Populate 2D", "should_trigger": true },
+  { "query": "what should I even be varying here, I just want 'a nice canopy'", "should_trigger": false },
+  { "query": "set up Galapagos to maximize morning sun on the south panels", "should_trigger": false },
+  { "query": "what's the one-sentence organizing idea for this tower?", "should_trigger": false },
+  { "query": "how will we measure whether this layout is better than the last one?", "should_trigger": false },
+  { "query": "export my Rhino plan to Illustrator with architectural line weights", "should_trigger": false },
+  { "query": "nest these plywood parts for CNC cutting", "should_trigger": false },
+  { "query": "fix the line weight hierarchy on my exported section drawing", "should_trigger": false }
+]

@@ -1,0 +1,35 @@
+# Parti Benchmark Results
+
+This file tracks the pass rate of the Parti evaluation suite (`tests/Parti.Eval.v01/`) across releases.
+
+The eval suite is a set of data-driven xUnit fixtures (`tests/Parti.Eval.v01/fixtures/*.json`) that exercise hermetic conversation sessions end-to-end — text-only turns, tool calls, retries, error paths, and long conversations. A fixture passes when the session matches every expectation in its `expected` block (final stop reason, status, interaction count, etc.).
+
+Eventually CI will publish updated numbers here automatically (see roadmap). For now rows are added by hand.
+
+## Results
+
+| Version | Date       | Fixtures | Pass rate | Notes |
+|---------|------------|----------|-----------|-------|
+| v0.6    | 2026-04-19 | 12       | 100%      | Initial eval harness (12 JSON fixtures). Baseline for the v0.7 CI gate. |
+| v0.7    | 2026-04-20 | 15       | 100%      | CI eval gate added (`.github/workflows/ci.yml`). xUnit exit code enforces 100% pass; if the bar drops below 100% we'll switch to TRX parsing. Adds `20_group_workflow`, `21_layout_grid`, `22_ask_user_clarify`. |
+| v0.7.5  | 2026-04-23 | 18       | 100%      | Plugin preflight, component lock, bounded error-repair: `23_plugin_check`, `24_component_lock`, `25_error_repair_cap`. |
+| v0.8    | 2026-04-23 | 22       | 100%      | Fitness-function authorship + solver routing: `26_galapagos_setup_happy`, `27_galapagos_run_manual_start`, `28_octopus_missing_plugin_fallback`, `29_copper_envelope_demo`. |
+| v0.8.5  | 2026-04-23 | 22       | 100%      | Three-layer skill refactor (`prompts/parti-foundations/`); no fixture change. |
+| v0.9    | 2026-04-24 | 25       | 100%      | Adds `30_octopus_setup_pareto`, `31_wallacei_generative_setup`, and the inert placeholder `32_galapagos_real_phenotype_TEMPLATE`. |
+
+Fixture count reflects files under `tests/Parti.Eval.v01/fixtures/*.json`. The xUnit runner reports a slightly higher test count because a few non-fixture tests live alongside the data-driven harness — the table above intentionally only counts fixtures.
+
+> **Reconciliation note (2026-10-08).** The rows above were checked against the tags themselves. The v0.6 date and the v0.7 count are corrected, and rows v0.7.5–v0.9 are new. Each fixture count is `git ls-tree` of `tests/Parti.Eval.v01/fixtures/` at that tag. Each pass rate is a local re-run of that tag's eval suite on 2026-10-08 (macOS, `DOTNET_ROLL_FORWARD=Major`). From v0.6 to v0.9 those re-runs reported 14, 30, 33, 37, 37 and 40 eval xUnit tests, beside 30, 30, 130, 172, 201 and 267 Core tests, all passing. The CI run on the v0.8.5 tag commit failed in its Windows test step, and its logs have expired, so the v0.8.5 row rests on the local re-run.
+>
+> No tag has been cut since v0.9. Main at the untagged v0.9.1 package gates **29** fixtures, the `*.json` files directly in `fixtures/`, and all pass; see [`EVAL-v0.1.md`](EVAL-v0.1.md), which every test run regenerates. The solver fixtures 26–32 moved to `fixtures/deferred/` and are not run while their tools are unregistered. `fixtures/live/` holds ten live-model briefs, which are not gated; see [`EVAL-LIVE.md`](EVAL-LIVE.md). Neither subfolder counts toward the fixture number. On main the eval assembly reports 76 passed and 1 skipped (the opt-in live runner).
+
+## How this is updated
+
+1. Run the eval suite locally:
+   ```
+   dotnet test tests/Parti.Eval.v01/Parti.Eval.v01.csproj --configuration Release
+   ```
+2. Note the fixture count (files under `tests/Parti.Eval.v01/fixtures/`) and the xUnit pass/fail counts.
+3. Append a new row above with `Version | Date | Fixtures | Pass rate | Notes`.
+
+Planned for a later sprint: CI will write a new row on every tagged release instead of manual updates.

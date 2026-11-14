@@ -1,0 +1,88 @@
+{
+  "id": "30_octopus_setup_pareto",
+  "description": "v0.9 Octopus happy-path: user asks for a 2-objective Pareto optimisation (minimise structural mass, maximise daylight). The assistant first calls gh_plugin_check to confirm Octopus is installed, then calls gh_octopus_setup with two fitness clauses and two slider genomes, then ends the turn with a summary. Exercises the v0.9 gh_octopus_setup tool shape against a clean two-tool, three-provider-call flow with the pending_rhino response.",
+  "userPrompt": "Use Octopus to trade off structural mass (minimise) against daylight (maximise) by tuning panel_depth and stagger.",
+  "providerScript": [
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        { "kind": "text", "text": "Let me first confirm Octopus is installed on this machine." },
+        {
+          "kind": "tool_call",
+          "toolId": "toolu_check_octopus_30_1",
+          "toolName": "gh_plugin_check",
+          "input": { "names": ["octopus"] }
+        }
+      ]
+    },
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        { "kind": "text", "text": "Octopus is installed. Staging a 2-objective Pareto run: minimise mass, maximise daylight." },
+        {
+          "kind": "tool_call",
+          "toolId": "toolu_octopus_setup_30_1",
+          "toolName": "gh_octopus_setup",
+          "input": {
+            "clauses": [
+              { "metric": "structural_mass", "direction": "Minimize" },
+              { "metric": "daylight", "direction": "Maximize" }
+            ],
+            "genomes": [
+              { "slider_name": "panel_depth", "min": 100, "max": 400 },
+              { "slider_name": "stagger", "min": 0, "max": 500 }
+            ],
+            "generations": 60,
+            "populationSize": 80
+          }
+        }
+      ]
+    },
+    {
+      "stopReason": "end_turn",
+      "interactions": [
+        { "kind": "text", "text": "Octopus setup is validated: two objectives (mass, daylight) wired to two genomes (panel_depth, stagger). Open the Octopus component in Rhino and press Start to begin the Pareto search." }
+      ]
+    }
+  ],
+  "toolHandlers": {
+    "gh_plugin_check": {
+      "result": {
+        "status": "ok",
+        "plugins": [
+          { "name": "Octopus", "version": "0.4.0", "kind": "Gha" }
+        ]
+      }
+    },
+    "gh_octopus_setup": {
+      "result": {
+        "status": "pending_rhino",
+        "component": "Octopus",
+        "message": "Octopus setup shape validated.",
+        "detected_version": "0.4.0",
+        "validated": { "clause_count": 2, "genome_count": 2 },
+        "clamped_parameters": {
+          "generations": 60,
+          "populationSize": 80,
+          "eliteSize": 5,
+          "mutationProbability": 0.5
+        }
+      }
+    }
+  },
+  "expected": {
+    "finalStopReason": "end_turn",
+    "finalStatus": "Finished",
+    "toolCallCount": 2,
+    "providerCallCount": 3,
+    "toolCallsMinCount": {
+      "gh_plugin_check": 1,
+      "gh_octopus_setup": 1
+    },
+    "toolCallsMaxCount": {
+      "gh_galapagos_setup": 0,
+      "gh_wallacei_setup": 0
+    },
+    "finalTextContainsAny": ["octopus", "pareto", "mass", "daylight"]
+  }
+}

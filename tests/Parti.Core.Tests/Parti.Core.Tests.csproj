@@ -1,0 +1,49 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>Parti.Core.Tests</RootNamespace>
+    <AssemblyName>Parti.Core.Tests</AssemblyName>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <!--
+      The .NET SDK auto-includes .md files under the project directory as EmbeddedResource.
+      We disable that so the explicit <EmbeddedResource Include=... LogicalName=... /> items
+      below are the only source of truth for test-fixture resource names.
+    -->
+    <EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
+    <PackageReference Include="xunit" Version="2.9.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.0.2" />
+    <PackageReference Include="coverlet.collector" Version="10.1.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Parti.Core\Parti.Core.csproj" />
+    <ProjectReference Include="..\..\src\Parti.Core.Grasshopper\Parti.Core.Grasshopper.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <!--
+      Fixtures for EmbeddedResourceSkillSourceTests. .md files are NOT auto-included as
+      EmbeddedResource by the .NET SDK, so we use Include (not Update) with explicit
+      LogicalName. Normal-case fixtures live under TestFixtures/Skills/.
+    -->
+    <EmbeddedResource Include="TestFixtures\Skills\parti-foundations\SKILL.md"
+                      LogicalName="TestFixtures.Skills.parti-foundations.SKILL.md" />
+    <EmbeddedResource Include="TestFixtures\Skills\parti-foundations\parti-alpha\SKILL.md"
+                      LogicalName="TestFixtures.Skills.parti-foundations.parti-alpha.SKILL.md" />
+    <EmbeddedResource Include="TestFixtures\Skills\parti-foundations\parti-beta\SKILL.md"
+                      LogicalName="TestFixtures.Skills.parti-foundations.parti-beta.SKILL.md" />
+
+    <!--
+      Backslash-variant fixtures, via <Link> so MSBuild sees distinct items even though
+      they point at the same physical files. This simulates the Windows MSBuild
+      %(RecursiveDir) artifact that produces resource names with literal backslashes.
+    -->
+    <EmbeddedResource Include="TestFixtures\Skills\parti-foundations\SKILL.md"
+                      Link="TestFixtures\Skills\Win\SKILL.md"
+                      LogicalName="TestFixtures.Skills.Win.parti-foundations\SKILL.md" />
+    <EmbeddedResource Include="TestFixtures\Skills\parti-foundations\parti-alpha\SKILL.md"
+                      Link="TestFixtures\Skills\Win\parti-alpha\SKILL.md"
+                      LogicalName="TestFixtures.Skills.Win.parti-foundations\parti-alpha\SKILL.md" />
+  </ItemGroup>
+</Project>

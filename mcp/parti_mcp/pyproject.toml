@@ -1,0 +1,21 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "parti-mcp"
+version = "0.0.1"
+description = "MCP server for Parti — exposes Grasshopper AI tools to external agents."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "LGPL-3.0-or-later" }
+authors = [{ name = "Zohar Tito" }]
+dependencies = [
+  "mcp>=1.2.0",
+]
+
+[project.scripts]
+parti-mcp = "parti_mcp.__main__:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["parti_mcp"]

@@ -1,0 +1,89 @@
+{
+  "id": "24_component_lock",
+  "description": "Lock flow: gh_component_lock lock (instance GUID targets) then list; the controller lists the lock; no write, no review.",
+  "userPrompt": "Lock the panel 5eed0000-0000-4000-8000-000000000002 so nobody touches it, then show me what is locked.",
+  "canvas": "hermetic",
+  "canvasSeed": {
+    "components": [
+      {
+        "instanceGuid": "5eed0000-0000-4000-8000-000000000001",
+        "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+        "x": 0,
+        "y": 0
+      },
+      {
+        "instanceGuid": "5eed0000-0000-4000-8000-000000000002",
+        "componentGuid": "59e0b89a-e487-49f8-bab8-b5bab16be14c",
+        "x": 250,
+        "y": 0
+      }
+    ]
+  },
+  "providerScript": [
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "text",
+          "text": "Locking it first, then reading back the lock list."
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_component_lock",
+          "input": {
+            "action": "lock",
+            "targets": [
+              "5eed0000-0000-4000-8000-000000000002"
+            ]
+          },
+          "toolId": "toolu_lock_1"
+        }
+      ]
+    },
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "tool_call",
+          "toolName": "gh_component_lock",
+          "input": {
+            "action": "list"
+          },
+          "toolId": "toolu_list_1"
+        }
+      ]
+    },
+    {
+      "stopReason": "end_turn",
+      "interactions": [
+        {
+          "kind": "text",
+          "text": "The panel is locked. The lock list has one entry; only you can unlock it from the chat window."
+        }
+      ]
+    }
+  ],
+  "expected": {
+    "terminalStatus": "Idle",
+    "finalStopReason": "end_turn",
+    "finalStatus": "Finished",
+    "toolCallCount": 2,
+    "providerCallCount": 3,
+    "toolCallsMinCount": {
+      "gh_component_lock": 2
+    },
+    "toolCallsMaxCount": {
+      "gh_delete": 0,
+      "gh_add_component": 0
+    },
+    "finalTextContainsAny": [
+      "locked",
+      "lock list"
+    ],
+    "planReviewCount": 0,
+    "lockedComponents": [
+      "5eed0000-0000-4000-8000-000000000002"
+    ],
+    "canvasUnchanged": true
+  }
+}

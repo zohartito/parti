@@ -1,0 +1,100 @@
+{
+  "id": "02_add_slider",
+  "description": "Decomposition first, then one gh_add_component by exact componentGuid; the plan shows the catalog name.",
+  "userPrompt": "Add a number slider for a circle radius between 1 and 10 m; keep the footprint area under 50 m2.",
+  "providerScript": [
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "text",
+          "text": "Recording the brief first."
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "parti_record_decomposition",
+          "input": {
+            "inputs": [
+              {
+                "name": "radius",
+                "domain": "1..10",
+                "unit": "m",
+                "source": "user_stated"
+              }
+            ],
+            "rules": [
+              {
+                "statement": "circle centred on the world origin in the XY plane",
+                "source": "user_stated"
+              }
+            ],
+            "principle": "one-parameter circular footprint",
+            "evaluations": [
+              {
+                "metric": "footprint area",
+                "direction": "KEEP",
+                "target": 50,
+                "source": "assumed"
+              }
+            ]
+          },
+          "toolId": "toolu_rec"
+        }
+      ]
+    },
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 100,
+            "y": 100
+          },
+          "toolId": "toolu_add_slider_1"
+        }
+      ]
+    },
+    {
+      "stopReason": "end_turn",
+      "interactions": [
+        {
+          "kind": "text",
+          "text": "Added a Number Slider at (100, 100)."
+        }
+      ]
+    }
+  ],
+  "toolHandlers": {
+    "gh_add_component": {
+      "result": {
+        "status": "success",
+        "instanceGuid": "3f2a9c10-0000-4000-8000-000000000001",
+        "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+        "canonicalName": "Number Slider",
+        "nickname": "",
+        "pivot": {
+          "x": 100,
+          "y": 100
+        }
+      }
+    }
+  },
+  "expected": {
+    "terminalStatus": "Idle",
+    "finalStopReason": "end_turn",
+    "finalStatus": "Finished",
+    "minInteractions": 6,
+    "textContains": "Number Slider",
+    "toolCallCount": 1,
+    "providerCallCount": 3,
+    "planReviewCount": 1,
+    "planLabelsContain": [
+      "Number Slider [Params/Input · Grasshopper]"
+    ],
+    "decompositionComplete": true,
+    "gateRejections": 0
+  }
+}

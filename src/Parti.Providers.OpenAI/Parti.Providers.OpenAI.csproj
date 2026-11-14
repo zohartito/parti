@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>Parti.Providers.OpenAI</RootNamespace>
+    <AssemblyName>Parti.Providers.OpenAI</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Parti.Core\Parti.Core.csproj" />
+    <ProjectReference Include="..\Parti.Infrastructure\Parti.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>

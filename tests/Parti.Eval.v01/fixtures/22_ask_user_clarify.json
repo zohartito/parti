@@ -1,0 +1,51 @@
+{
+  "id": "22_ask_user_clarify",
+  "description": "Ambiguous prompt with no referents: the model pauses with ask_user (sole call) and the loop ends Paused.",
+  "userPrompt": "connect the things",
+  "providerScript": [
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "text",
+          "text": "I'm not sure which components to connect. Please specify which two to wire."
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "ask_user",
+          "input": {
+            "questions": [
+              {
+                "id": "which",
+                "prompt": "Which two components should I connect?",
+                "kind": "text"
+              }
+            ]
+          },
+          "toolId": "toolu_ask_1"
+        }
+      ]
+    }
+  ],
+  "expected": {
+    "terminalStatus": "Paused",
+    "toolCallsMinCount": {
+      "ask_user": 1
+    },
+    "toolCallsMaxCount": {
+      "gh_connect": 0,
+      "gh_add_component": 0,
+      "gh_delete": 0
+    },
+    "finalTextContainsAny": [
+      "which",
+      "clarify",
+      "specify"
+    ],
+    "pausedWith": [
+      "which"
+    ],
+    "planReviewCount": 0,
+    "toolCallCount": 0
+  }
+}

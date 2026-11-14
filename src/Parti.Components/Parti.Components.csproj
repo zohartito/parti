@@ -1,0 +1,64 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>Parti.Components</RootNamespace>
+    <AssemblyName>Parti</AssemblyName>
+    <NoWarn>$(NoWarn);NU1701</NoWarn>
+  </PropertyGroup>
+  <!--
+    Build as Parti.dll, then copy to Parti.gha for Grasshopper. With TargetExt=.gha the
+    .gha lands in every referencing test project's deps.json, and the test host refuses a
+    non-.dll entry in its trusted assembly list ("Failed to create CoreCLR, HRESULT:
+    0x80070057"), which kept Parti.Integration.Tests and Parti.Eval.v01 from running.
+  -->
+  <Target Name="CopyGha" AfterTargets="Build">
+    <Copy SourceFiles="$(TargetPath)" DestinationFiles="$(TargetDir)$(TargetName).gha" SkipUnchangedFiles="true" />
+  </Target>
+  <ItemGroup>
+    <PackageReference Include="Grasshopper" Version="8.36.26296.17001" IncludeAssets="compile;build" />
+    <PackageReference Include="RhinoCommon" Version="8.36.26296.17001" IncludeAssets="compile;build" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Parti.Core\Parti.Core.csproj" />
+    <ProjectReference Include="..\Parti.Core.Grasshopper\Parti.Core.Grasshopper.csproj" />
+    <ProjectReference Include="..\Parti.Infrastructure\Parti.Infrastructure.csproj" />
+    <ProjectReference Include="..\Parti.Providers.Anthropic\Parti.Providers.Anthropic.csproj" />
+    <ProjectReference Include="..\Parti.Providers.OpenAI\Parti.Providers.OpenAI.csproj" />
+    <ProjectReference Include="..\Parti.Providers.Ollama\Parti.Providers.Ollama.csproj" />
+    <ProjectReference Include="..\Parti.Providers.Cli\Parti.Providers.Cli.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <!--
+      v0.8.5 3-layer skill bundle. Every file under prompts/parti-foundations/ is baked
+      into the shipped .gha as an embedded resource so the plugin is self-contained and
+      does not need file-system access at runtime.
+
+      LogicalName convention (read by Parti.Core.Prompts.SkillLoader):
+
+          Parti.Prompts.parti-foundations/<relative-path-with-forward-slashes>
+
+      Worked examples:
+          prompts/parti-foundations/SKILL.md
+              -> Parti.Prompts.parti-foundations/SKILL.md
+          prompts/parti-foundations/parti-ghcanvas/SKILL.md
+              -> Parti.Prompts.parti-foundations/parti-ghcanvas/SKILL.md
+          prompts/parti-foundations/parti-ghcanvas/references/tree-hygiene.md
+              -> Parti.Prompts.parti-foundations/parti-ghcanvas/references/tree-hygiene.md
+          prompts/parti-foundations/parti-ghcanvas/templates/range.json
+              -> Parti.Prompts.parti-foundations/parti-ghcanvas/templates/range.json
+
+      Notes for the loader author:
+        - Prefix is literal "Parti.Prompts.parti-foundations/" (note the trailing slash).
+        - The rest is the path relative to prompts/parti-foundations/, using forward
+          slashes. MSBuild's %(RecursiveDir) uses backslashes on Windows, so the
+          loader should normalize backslashes to forward slashes when matching.
+        - Both .md and .json files are embedded (Layer 0, Layer 1 SKILL.md, Layer 2
+          references/*.md and templates/*.json).
+        - MSBuild globs are evaluated at build time; new files added to the tree are
+          picked up on the next build with no csproj change required.
+    -->
+    <EmbeddedResource Include="..\..\prompts\parti-foundations\**\*.md"
+                      LogicalName="Parti.Prompts.parti-foundations/%(RecursiveDir)%(FileName)%(Extension)" />
+    <EmbeddedResource Include="..\..\prompts\parti-foundations\**\*.json"
+                      LogicalName="Parti.Prompts.parti-foundations/%(RecursiveDir)%(FileName)%(Extension)" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,91 @@
+{
+  "id": "31_wallacei_generative_setup",
+  "description": "v0.9 Wallacei happy-path: user asks for a generative 4-objective optimisation (daylight, glare, structural depth, facade area). The assistant confirms Wallacei is installed via gh_plugin_check, then calls gh_wallacei_setup with four fitness clauses and one slider genome, then ends the turn. Exercises the v0.9 gh_wallacei_setup tool shape against a clean two-tool, three-provider-call flow with the pending_rhino response and the default NSGA2 algorithm.",
+  "userPrompt": "Run a Wallacei generative study trading off four objectives: maximise daylight, minimise glare, minimise structural depth, and maximise facade area.",
+  "providerScript": [
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        { "kind": "text", "text": "Let me first confirm Wallacei is installed on this machine." },
+        {
+          "kind": "tool_call",
+          "toolId": "toolu_check_wallacei_31_1",
+          "toolName": "gh_plugin_check",
+          "input": { "names": ["wallacei"] }
+        }
+      ]
+    },
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        { "kind": "text", "text": "Wallacei is installed. Staging a generative 4-objective NSGA2 run." },
+        {
+          "kind": "tool_call",
+          "toolId": "toolu_wallacei_setup_31_1",
+          "toolName": "gh_wallacei_setup",
+          "input": {
+            "clauses": [
+              { "metric": "daylight", "direction": "Maximize" },
+              { "metric": "glare", "direction": "Minimize" },
+              { "metric": "structural_depth", "direction": "Minimize" },
+              { "metric": "facade_area", "direction": "Maximize" }
+            ],
+            "genomes": [
+              { "slider_name": "facade_param", "min": 0, "max": 1 }
+            ],
+            "generations": 80,
+            "populationSize": 120,
+            "algorithm": "NSGA2"
+          }
+        }
+      ]
+    },
+    {
+      "stopReason": "end_turn",
+      "interactions": [
+        { "kind": "text", "text": "Wallacei generative setup is validated: four objectives wired via NSGA2. Open the Wallacei component in Rhino and press Start to begin the run." }
+      ]
+    }
+  ],
+  "toolHandlers": {
+    "gh_plugin_check": {
+      "result": {
+        "status": "ok",
+        "plugins": [
+          { "name": "Wallacei X", "version": "2.7.0", "kind": "Gha" }
+        ]
+      }
+    },
+    "gh_wallacei_setup": {
+      "result": {
+        "status": "pending_rhino",
+        "component": "Wallacei",
+        "message": "Wallacei setup shape validated.",
+        "detected_version": "2.7.0",
+        "validated": { "clause_count": 4, "genome_count": 1, "algorithm": "NSGA2" },
+        "clamped_parameters": {
+          "generations": 80,
+          "populationSize": 120,
+          "eliteSize": 5,
+          "mutationProbability": 0.5,
+          "algorithm": "NSGA2"
+        }
+      }
+    }
+  },
+  "expected": {
+    "finalStopReason": "end_turn",
+    "finalStatus": "Finished",
+    "toolCallCount": 2,
+    "providerCallCount": 3,
+    "toolCallsMinCount": {
+      "gh_plugin_check": 1,
+      "gh_wallacei_setup": 1
+    },
+    "toolCallsMaxCount": {
+      "gh_galapagos_setup": 0,
+      "gh_octopus_setup": 0
+    },
+    "finalTextContainsAny": ["wallacei", "generative", "nsga2", "four objectives"]
+  }
+}

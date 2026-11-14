@@ -1,0 +1,85 @@
+{
+  "id": "48_all_assumed_decomposition_asks_user",
+  "description": "A structurally complete decomposition whose items are all assumed does not unlock writes: the add is gated (UserStated missing) and the model asks the user what they want.",
+  "userPrompt": "Don't ask me anything, just add a number slider.",
+  "canvas": "hermetic",
+  "providerScript": [
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "tool_call",
+          "toolName": "parti_record_decomposition",
+          "input": {
+            "inputs": [
+              {
+                "name": "value",
+                "domain": "0 to 100",
+                "source": "assumed"
+              }
+            ],
+            "rules": [],
+            "principle": "provide a numeric input for downstream components",
+            "evaluations": [
+              {
+                "metric": "slider placement",
+                "direction": "KEEP",
+                "source": "assumed"
+              }
+            ]
+          },
+          "toolId": "toolu_rec_assumed"
+        }
+      ]
+    },
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 0,
+            "y": 0
+          },
+          "toolId": "toolu_add_assumed"
+        }
+      ]
+    },
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "text",
+          "text": "Everything in that brief was my guess."
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "ask_user",
+          "input": {
+            "questions": [
+              {
+                "id": "intent",
+                "prompt": "What should the slider control, and how will you judge the result?",
+                "kind": "text"
+              }
+            ]
+          },
+          "toolId": "toolu_ask_intent"
+        }
+      ]
+    }
+  ],
+  "expected": {
+    "terminalStatus": "Paused",
+    "decompositionComplete": false,
+    "gateRejections": 1,
+    "planReviewCount": 0,
+    "toolCallCount": 0,
+    "canvasUnchanged": true,
+    "pausedWith": [
+      "intent"
+    ]
+  }
+}

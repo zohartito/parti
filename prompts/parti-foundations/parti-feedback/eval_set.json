@@ -1,0 +1,14 @@
+[
+  { "query": "how should we measure whether this layout is any good?", "should_trigger": true },
+  { "query": "define the success criteria for this daylighting scheme", "should_trigger": true },
+  { "query": "what metric tells us if the structure is improving?", "should_trigger": true },
+  { "query": "I need an evaluation function for thermal comfort across the zones", "should_trigger": true },
+  { "query": "which direction is better here, and how do we score it?", "should_trigger": true },
+  { "query": "what's the fitness clause that says one option beats another?", "should_trigger": true },
+  { "query": "what are the variables and constraints for this brief?", "should_trigger": false },
+  { "query": "set up the Galapagos solver and run it", "should_trigger": false },
+  { "query": "wire the slider into the extrude component", "should_trigger": false },
+  { "query": "what's the one-line organizing idea?", "should_trigger": false },
+  { "query": "export the drawing to Illustrator with line weights", "should_trigger": false },
+  { "query": "prepare 3D-print toolpaths for the connector", "should_trigger": false }
+]

@@ -1,0 +1,129 @@
+{
+  "id": "12_set_and_delete",
+  "description": "Hermetic canvas with a seeded slider and panel: decompose, set the slider by instance GUID, then delete the panel.",
+  "userPrompt": "Set the radius slider to 0.75 and delete the panel; the radius stays within 0 to 1 m and the area under 50 m2.",
+  "canvas": "hermetic",
+  "canvasSeed": {
+    "components": [
+      {
+        "instanceGuid": "5eed0000-0000-4000-8000-000000000001",
+        "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+        "x": 0,
+        "y": 0
+      },
+      {
+        "instanceGuid": "5eed0000-0000-4000-8000-000000000002",
+        "componentGuid": "59e0b89a-e487-49f8-bab8-b5bab16be14c",
+        "x": 250,
+        "y": 0
+      }
+    ],
+    "wires": [
+      {
+        "from": "5eed0000-0000-4000-8000-000000000001",
+        "to": "5eed0000-0000-4000-8000-000000000002"
+      }
+    ]
+  },
+  "providerScript": [
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "text",
+          "text": "Recording the brief first."
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "parti_record_decomposition",
+          "input": {
+            "inputs": [
+              {
+                "name": "radius",
+                "domain": "0..1",
+                "unit": "m",
+                "source": "user_stated"
+              }
+            ],
+            "rules": [
+              {
+                "statement": "circle centred on the world origin in the XY plane",
+                "source": "user_stated"
+              }
+            ],
+            "principle": "one-parameter circular footprint",
+            "evaluations": [
+              {
+                "metric": "footprint area",
+                "direction": "KEEP",
+                "target": 50,
+                "source": "assumed"
+              }
+            ]
+          },
+          "toolId": "toolu_rec"
+        }
+      ]
+    },
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "tool_call",
+          "toolName": "gh_set_input",
+          "input": {
+            "target": "5eed0000-0000-4000-8000-000000000001",
+            "value": 0.75
+          },
+          "toolId": "toolu_set_1"
+        }
+      ]
+    },
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "tool_call",
+          "toolName": "gh_delete",
+          "input": {
+            "target": "5eed0000-0000-4000-8000-000000000002"
+          },
+          "toolId": "toolu_del_1"
+        }
+      ]
+    },
+    {
+      "stopReason": "end_turn",
+      "interactions": [
+        {
+          "kind": "text",
+          "text": "Set the slider to 0.75 and deleted the panel."
+        }
+      ]
+    }
+  ],
+  "expected": {
+    "terminalStatus": "Idle",
+    "finalStopReason": "end_turn",
+    "finalStatus": "Finished",
+    "minInteractions": 8,
+    "textContains": "deleted the panel",
+    "toolCallCount": 2,
+    "providerCallCount": 4,
+    "planReviewCount": 2,
+    "canvasHasComponent": [
+      {
+        "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "componentGuid": "59e0b89a-e487-49f8-bab8-b5bab16be14c",
+        "min": 0,
+        "max": 0
+      }
+    ],
+    "canvasWireCount": 0,
+    "canvasUnchanged": false
+  }
+}

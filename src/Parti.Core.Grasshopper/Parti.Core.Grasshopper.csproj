@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>Parti.Core.Grasshopper</RootNamespace>
+    <AssemblyName>Parti.Core.Grasshopper</AssemblyName>
+    <NoWarn>$(NoWarn);NU1701</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Grasshopper" Version="8.36.26296.17001" IncludeAssets="compile;build" />
+    <PackageReference Include="RhinoCommon" Version="8.36.26296.17001" IncludeAssets="compile;build" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Parti.Core\Parti.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <!--
+      Expose internal emitter seam and internal ctor on GrasshopperUndoScope to the
+      hermetic test project. Tests need the internal ctor so they can inject a fake
+      IGhUndoEmitter without spinning up Rhino.
+    -->
+    <InternalsVisibleTo Include="Parti.Integration.Tests" />
+  </ItemGroup>
+</Project>

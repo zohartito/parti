@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>Parti.Integration.Tests</RootNamespace>
+    <AssemblyName>Parti.Integration.Tests</AssemblyName>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
+    <PackageReference Include="xunit" Version="2.9.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.0.2" />
+    <PackageReference Include="coverlet.collector" Version="10.1.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Parti.Core\Parti.Core.csproj" />
+    <ProjectReference Include="..\..\src\Parti.Core.Grasshopper\Parti.Core.Grasshopper.csproj" />
+    <ProjectReference Include="..\..\src\Parti.Components\Parti.Components.csproj" />
+    <ProjectReference Include="..\..\src\Parti.Providers.Anthropic\Parti.Providers.Anthropic.csproj" />
+    <ProjectReference Include="..\..\src\Parti.Providers.Ollama\Parti.Providers.Ollama.csproj" />
+    <ProjectReference Include="..\..\src\Parti.Providers.OpenAI\Parti.Providers.OpenAI.csproj" />
+    <ProjectReference Include="..\..\src\Parti.Providers.Cli\Parti.Providers.Cli.csproj" />
+  </ItemGroup>
+  <PropertyGroup>
+    <!--
+      Override the Grasshopper package's own post-build step that strips Grasshopper.dll
+      out of the bin output (see Grasshopper.targets shipped with the NuGet). UndoScopeTests
+      touches Grasshopper.Kernel types at runtime, so we need the reference DLL present.
+      We still never call any API that needs the native rhcommon_c.dll.
+    -->
+    <ShouldRemoveRhinoReferences>false</ShouldRemoveRhinoReferences>
+  </PropertyGroup>
+  <ItemGroup>
+    <!--
+      Compile + runtime references so GrasshopperUndoScope's static type load succeeds
+      inside the test host. NU1701 suppresses the "built for an older TFM" warning.
+    -->
+    <PackageReference Include="Grasshopper" Version="8.36.26296.17001" NoWarn="NU1701" />
+    <PackageReference Include="RhinoCommon" Version="8.36.26296.17001" NoWarn="NU1701" />
+  </ItemGroup>
+</Project>

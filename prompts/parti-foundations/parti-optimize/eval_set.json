@@ -1,0 +1,16 @@
+[
+  { "query": "set up Galapagos to minimize structural mass while keeping deflection under 20mm", "should_trigger": true },
+  { "query": "run a multi-objective search with Octopus over panel depth and panel angle", "should_trigger": true },
+  { "query": "use Wallacei to evolve the truss layout for daylight and material use", "should_trigger": true },
+  { "query": "wire the panel_depth slider as the genome and morning-light as the fitness, then optimize", "should_trigger": true },
+  { "query": "find the mullion spacing that maximizes view while minimizing cost", "should_trigger": true },
+  { "query": "evolve the shading fins so summer gain is low but winter gain stays high", "should_trigger": true },
+  { "query": "which solver should I use to search this genome, Galapagos or Octopus?", "should_trigger": true },
+  { "query": "add a slider and connect it to the extrude height", "should_trigger": false },
+  { "query": "what are my variables and what's fixed for this canopy?", "should_trigger": false },
+  { "query": "give me the main idea of this scheme in one line", "should_trigger": false },
+  { "query": "what metric should even define success here?", "should_trigger": false },
+  { "query": "fix the line weights on my exported Rhino section", "should_trigger": false },
+  { "query": "lay out parts on a 4x8 sheet for the laser cutter", "should_trigger": false },
+  { "query": "group these components and tidy the wiring", "should_trigger": false }
+]

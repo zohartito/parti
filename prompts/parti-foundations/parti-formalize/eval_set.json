@@ -1,0 +1,15 @@
+[
+  { "query": "I just want a cool pavilion, where do I even start?", "should_trigger": true },
+  { "query": "help me figure out what to vary and what to hold fixed for this canopy", "should_trigger": true },
+  { "query": "turn 'a responsive facade' into actual parameters and constraints", "should_trigger": true },
+  { "query": "what are the inputs and rules for a parametric staircase?", "should_trigger": true },
+  { "query": "I have a vague brief for a shading screen, break it into variables", "should_trigger": true },
+  { "query": "before we draw anything, what are the design's degrees of freedom?", "should_trigger": true },
+  { "query": "pin down what's adjustable versus locked for this tower massing", "should_trigger": true },
+  { "query": "connect these two components on the canvas", "should_trigger": false },
+  { "query": "run Galapagos on this fitness function", "should_trigger": false },
+  { "query": "name the organizing principle for this scheme", "should_trigger": false },
+  { "query": "how will we measure if it's any good?", "should_trigger": false },
+  { "query": "export to Illustrator with proper line weights", "should_trigger": false },
+  { "query": "generate a cut list for the timber members", "should_trigger": false }
+]

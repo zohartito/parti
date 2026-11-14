@@ -1,0 +1,150 @@
+{
+  "id": "21_layout_grid",
+  "description": "Hermetic canvas: decompose, add four panels in one reviewed batch, then arrange them in an explicit 2x2 grid.",
+  "userPrompt": "Add four panels for the four facade readouts and arrange them in a 2 by 2 grid.",
+  "canvas": "hermetic",
+  "providerScript": [
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "text",
+          "text": "Recording the brief first."
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "parti_record_decomposition",
+          "input": {
+            "inputs": [
+              {
+                "name": "readout count",
+                "domain": "4",
+                "source": "user_stated"
+              }
+            ],
+            "rules": [
+              {
+                "statement": "panels arranged as a 2 by 2 grid",
+                "source": "user_stated"
+              }
+            ],
+            "principle": "a tidy dashboard of four readouts",
+            "evaluations": [
+              {
+                "metric": "panels visible without overlap",
+                "direction": "KEEP",
+                "source": "assumed"
+              }
+            ]
+          },
+          "toolId": "toolu_rec"
+        }
+      ]
+    },
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "59e0b89a-e487-49f8-bab8-b5bab16be14c",
+            "x": 0,
+            "y": 0
+          },
+          "toolId": "toolu_p1"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "59e0b89a-e487-49f8-bab8-b5bab16be14c",
+            "x": 0,
+            "y": 0
+          },
+          "toolId": "toolu_p2"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "59e0b89a-e487-49f8-bab8-b5bab16be14c",
+            "x": 0,
+            "y": 0
+          },
+          "toolId": "toolu_p3"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "59e0b89a-e487-49f8-bab8-b5bab16be14c",
+            "x": 0,
+            "y": 0
+          },
+          "toolId": "toolu_p4"
+        }
+      ]
+    },
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "tool_call",
+          "toolName": "gh_layout",
+          "input": {
+            "targets": [
+              "c0000000-0000-4000-8000-000000000001",
+              "c0000000-0000-4000-8000-000000000002",
+              "c0000000-0000-4000-8000-000000000003",
+              "c0000000-0000-4000-8000-000000000004"
+            ],
+            "arrangement": "grid",
+            "origin": {
+              "x": 0,
+              "y": 0
+            },
+            "spacing": {
+              "x": 220,
+              "y": 120
+            }
+          },
+          "toolId": "toolu_lay"
+        }
+      ]
+    },
+    {
+      "stopReason": "end_turn",
+      "interactions": [
+        {
+          "kind": "text",
+          "text": "Step 1 added the four panels; step 2 arranged them in a 2x2 grid."
+        }
+      ]
+    }
+  ],
+  "expected": {
+    "terminalStatus": "Idle",
+    "finalStopReason": "end_turn",
+    "finalStatus": "Finished",
+    "planReviewCount": 2,
+    "toolCallsMinCount": {
+      "gh_add_component": 4,
+      "gh_layout": 1
+    },
+    "toolCallsMaxCount": {
+      "gh_delete": 0
+    },
+    "finalTextContainsAll": [
+      "step 1",
+      "step 2"
+    ],
+    "canvasHasComponent": [
+      {
+        "componentGuid": "59e0b89a-e487-49f8-bab8-b5bab16be14c",
+        "min": 4,
+        "max": 4
+      }
+    ]
+  }
+}

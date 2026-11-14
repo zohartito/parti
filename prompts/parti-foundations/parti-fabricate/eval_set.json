@@ -1,0 +1,14 @@
+[
+  { "query": "nest these plywood panels for CNC cutting", "should_trigger": true },
+  { "query": "generate a cut list for the timber members", "should_trigger": true },
+  { "query": "prepare 3D-print toolpaths for this connector", "should_trigger": true },
+  { "query": "lay out the parts on a 4x8 sheet for the laser cutter", "should_trigger": true },
+  { "query": "what's the fabrication plan to actually build these panels?", "should_trigger": true },
+  { "query": "give me a nesting layout that minimizes offcuts on the router bed", "should_trigger": true },
+  { "query": "add a slider and connect it to the canvas", "should_trigger": false },
+  { "query": "what should I optimize, mass or deflection?", "should_trigger": false },
+  { "query": "what are the variables for this brief?", "should_trigger": false },
+  { "query": "export my drawing to Illustrator with line weights", "should_trigger": false },
+  { "query": "name the organizing principle of the scheme", "should_trigger": false },
+  { "query": "how do we measure success on daylight?", "should_trigger": false }
+]

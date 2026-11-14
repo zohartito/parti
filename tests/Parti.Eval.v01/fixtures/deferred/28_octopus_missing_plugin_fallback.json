@@ -1,0 +1,73 @@
+{
+  "id": "28_octopus_missing_plugin_fallback",
+  "description": "v0.8 Octopus-absent fallback path: user asks for a multi-objective Octopus optimization, but gh_plugin_check reports Octopus is not installed (only Galapagos is). The assistant pivots to a single-objective gh_galapagos_setup with a weighted-composite fitness clause, then ends the turn explaining the fallback. Exercises the parti-optimize persona's documented 'fall back to Galapagos when Octopus/Wallacei aren't installed' behavior.",
+  "userPrompt": "Use Octopus to optimize three objectives: daylight, structural depth, and facade area.",
+  "providerScript": [
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        { "kind": "text", "text": "Let me first check whether Octopus is available on this machine." },
+        {
+          "kind": "tool_call",
+          "toolId": "toolu_check_octopus_1",
+          "toolName": "gh_plugin_check",
+          "input": { "names": ["octopus", "galapagos"] }
+        }
+      ]
+    },
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        { "kind": "text", "text": "Octopus is not installed on this machine. I'll fall back to Galapagos with a single-objective weighted composite of the three metrics (daylight + structural depth + facade area)." },
+        {
+          "kind": "tool_call",
+          "toolId": "toolu_galapagos_setup_fallback_1",
+          "toolName": "gh_galapagos_setup",
+          "input": {
+            "genomes": [
+              { "slider_name": "facade_param", "min": 0, "max": 1 }
+            ],
+            "fitness": { "metric": "composite_daylight_depth_area", "direction": "Maximize" }
+          }
+        }
+      ]
+    },
+    {
+      "stopReason": "end_turn",
+      "interactions": [
+        { "kind": "text", "text": "Octopus is not installed, so I used the documented fallback: a single-objective Galapagos setup with a weighted composite fitness function combining daylight, structural depth, and facade area. If you want true multi-objective Pareto fronts, install Octopus from Food4Rhino and we can redo this." }
+      ]
+    }
+  ],
+  "toolHandlers": {
+    "gh_plugin_check": {
+      "result": {
+        "status": "ok",
+        "plugins": [
+          { "name": "Galapagos", "version": "1.0", "kind": "Gha" }
+        ]
+      }
+    },
+    "gh_galapagos_setup": {
+      "result": {
+        "status": "pending_rhino",
+        "message": "Setup validated",
+        "validated": { "genome_count": 1, "fitness_metric": "composite_daylight_depth_area" }
+      }
+    }
+  },
+  "expected": {
+    "finalStopReason": "end_turn",
+    "finalStatus": "Finished",
+    "toolCallCount": 2,
+    "providerCallCount": 3,
+    "toolCallsMinCount": {
+      "gh_plugin_check": 1,
+      "gh_galapagos_setup": 1
+    },
+    "toolCallsMaxCount": {
+      "gh_octopus_setup": 0
+    },
+    "finalTextContainsAny": ["octopus", "not installed", "fallback", "single-objective", "composite"]
+  }
+}

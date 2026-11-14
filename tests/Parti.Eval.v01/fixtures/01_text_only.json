@@ -1,0 +1,26 @@
+{
+  "id": "01_text_only",
+  "description": "Simple greeting that resolves in a single turn without any tool use.",
+  "userPrompt": "hello",
+  "providerScript": [
+    {
+      "stopReason": "end_turn",
+      "interactions": [
+        {
+          "kind": "text",
+          "text": "Hi there! What would you like to build in Grasshopper?"
+        }
+      ]
+    }
+  ],
+  "expected": {
+    "terminalStatus": "Idle",
+    "finalStopReason": "end_turn",
+    "finalStatus": "Finished",
+    "minInteractions": 2,
+    "textContains": "Hi there",
+    "toolCallCount": 0,
+    "providerCallCount": 1,
+    "planReviewCount": 0
+  }
+}

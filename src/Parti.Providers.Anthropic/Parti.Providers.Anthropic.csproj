@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>Parti.Providers.Anthropic</RootNamespace>
+    <AssemblyName>Parti.Providers.Anthropic</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Parti.Core\Parti.Core.csproj" />
+    <ProjectReference Include="..\Parti.Infrastructure\Parti.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>

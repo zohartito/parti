@@ -1,0 +1,71 @@
+{
+  "id": "04_list_all",
+  "description": "Model snapshots the whole canvas via gh_get_all and summarises it; reads skip the gate and the reviewer.",
+  "userPrompt": "what's on my canvas?",
+  "providerScript": [
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "tool_call",
+          "toolName": "gh_get_all",
+          "input": {},
+          "toolId": "toolu_all"
+        }
+      ]
+    },
+    {
+      "stopReason": "end_turn",
+      "interactions": [
+        {
+          "kind": "text",
+          "text": "Your canvas has 2 components: a Number Slider and a Panel."
+        }
+      ]
+    }
+  ],
+  "toolHandlers": {
+    "gh_get_all": {
+      "result": {
+        "status": "success",
+        "documentId": "canned-doc",
+        "count": 2,
+        "nodes": [
+          {
+            "id": "3f2a9c10-0000-4000-8000-000000000001",
+            "iid": "3f2a9c10-0000-4000-8000-000000000001",
+            "documentId": "canned-doc",
+            "ref": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "n": "Number Slider",
+            "pos": [
+              0,
+              0
+            ]
+          },
+          {
+            "id": "3f2a9c10-0000-4000-8000-000000000002",
+            "iid": "3f2a9c10-0000-4000-8000-000000000002",
+            "documentId": "canned-doc",
+            "ref": "59e0b89a-e487-49f8-bab8-b5bab16be14c",
+            "n": "Panel",
+            "pos": [
+              0,
+              0
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "expected": {
+    "terminalStatus": "Idle",
+    "finalStopReason": "end_turn",
+    "finalStatus": "Finished",
+    "minInteractions": 4,
+    "textContains": "2 components",
+    "toolCallCount": 1,
+    "providerCallCount": 2,
+    "planReviewCount": 0,
+    "gateRejections": 0
+  }
+}

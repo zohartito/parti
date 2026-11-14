@@ -1,0 +1,16 @@
+---
+# Yak package manifest for Parti. packaging/build_package.sh copies this file into
+# the staging folder and overwrites `version` with <Version> from Directory.Build.props.
+name: parti
+version: 0.9.1
+authors:
+- Zohar Tito
+description: >
+  Open-source Grasshopper AI copilot for Rhino 8. Bring your own model
+  (local Ollama or Anthropic), with plan approval before canvas edits.
+url: https://github.com/zohartito/parti
+keywords:
+- grasshopper
+- ai
+- copilot
+- ollama

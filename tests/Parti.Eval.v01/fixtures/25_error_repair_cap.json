@@ -1,0 +1,147 @@
+{
+  "id": "25_error_repair_cap",
+  "description": "Bounded error repair in the product: after the decomposition, five consecutive reviewed adds fail at dispatch; the 5th all-error pass stops tool use; one closing call with tools off lets the model explain the failure, then the loop ends with the repair-cap error.",
+  "userPrompt": "Add a panel for the circle area (radius 1 to 10 m, keep area under 50 m2).",
+  "providerScript": [
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "text",
+          "text": "Recording the brief first."
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "parti_record_decomposition",
+          "input": {
+            "inputs": [
+              {
+                "name": "radius",
+                "domain": "1..10",
+                "unit": "m",
+                "source": "user_stated"
+              }
+            ],
+            "rules": [
+              {
+                "statement": "circle centred on the world origin in the XY plane",
+                "source": "user_stated"
+              }
+            ],
+            "principle": "one-parameter circular footprint",
+            "evaluations": [
+              {
+                "metric": "footprint area",
+                "direction": "KEEP",
+                "target": 50,
+                "source": "assumed"
+              }
+            ]
+          },
+          "toolId": "toolu_rec"
+        }
+      ]
+    },
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "59e0b89a-e487-49f8-bab8-b5bab16be14c",
+            "x": 0,
+            "y": 0
+          },
+          "toolId": "toolu_bad_1"
+        }
+      ]
+    },
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "59e0b89a-e487-49f8-bab8-b5bab16be14c",
+            "x": 0,
+            "y": 0
+          },
+          "toolId": "toolu_bad_2"
+        }
+      ]
+    },
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "59e0b89a-e487-49f8-bab8-b5bab16be14c",
+            "x": 0,
+            "y": 0
+          },
+          "toolId": "toolu_bad_3"
+        }
+      ]
+    },
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "59e0b89a-e487-49f8-bab8-b5bab16be14c",
+            "x": 0,
+            "y": 0
+          },
+          "toolId": "toolu_bad_4"
+        }
+      ]
+    },
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "59e0b89a-e487-49f8-bab8-b5bab16be14c",
+            "x": 0,
+            "y": 0
+          },
+          "toolId": "toolu_bad_5"
+        }
+      ]
+    },
+    {
+      "stopReason": "end_turn",
+      "interactions": [
+        {
+          "kind": "text",
+          "text": "The Panel component could not be created, so nothing was added. Try again after restarting Grasshopper."
+        }
+      ]
+    }
+  ],
+  "toolHandlers": {
+    "gh_add_component": {
+      "error": "CreateInstance returned null for Panel"
+    }
+  },
+  "expected": {
+    "terminalStatus": "Error",
+    "finalStatus": "Error",
+    "errorContains": "Error-repair cap (5)",
+    "textContains": "could not be created",
+    "providerCallCount": 7,
+    "toolCallCount": 5,
+    "planReviewCount": 5,
+    "toolCallsMinCount": {
+      "gh_add_component": 5
+    }
+  }
+}

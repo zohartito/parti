@@ -1,0 +1,106 @@
+{
+  "id": "44_find_then_add_shows_catalog_name",
+  "description": "Discovery then write: gh_find_component returns the exact componentGuid, the add uses it, and the reviewer sees the catalog-resolved label.",
+  "userPrompt": "Add a slider for the circle radius (1 to 10 m, keep area under 50 m2); look the component up first.",
+  "canvas": "hermetic",
+  "providerScript": [
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "text",
+          "text": "Recording the brief first."
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "parti_record_decomposition",
+          "input": {
+            "inputs": [
+              {
+                "name": "radius",
+                "domain": "1..10",
+                "unit": "m",
+                "source": "user_stated"
+              }
+            ],
+            "rules": [
+              {
+                "statement": "circle centred on the world origin in the XY plane",
+                "source": "user_stated"
+              }
+            ],
+            "principle": "one-parameter circular footprint",
+            "evaluations": [
+              {
+                "metric": "footprint area",
+                "direction": "KEEP",
+                "target": 50,
+                "source": "assumed"
+              }
+            ]
+          },
+          "toolId": "toolu_rec"
+        }
+      ]
+    },
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "tool_call",
+          "toolName": "gh_find_component",
+          "input": {
+            "query": "number slider",
+            "limit": 3
+          },
+          "toolId": "toolu_find"
+        }
+      ]
+    },
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 40,
+            "y": 40
+          },
+          "toolId": "toolu_add_found"
+        }
+      ]
+    },
+    {
+      "stopReason": "end_turn",
+      "interactions": [
+        {
+          "kind": "text",
+          "text": "Found the Number Slider in Params/Input and added it."
+        }
+      ]
+    }
+  ],
+  "expected": {
+    "terminalStatus": "Idle",
+    "finalStopReason": "end_turn",
+    "toolCallsInclude": [
+      "gh_find_component",
+      "gh_add_component"
+    ],
+    "toolCallCount": 2,
+    "planReviewCount": 1,
+    "planLabelsContain": [
+      "Number Slider [Params/Input · Grasshopper]",
+      "57da07bd-ecab-415d-9d86-af36d7073abc"
+    ],
+    "canvasHasComponent": [
+      {
+        "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+        "min": 1,
+        "max": 1
+      }
+    ]
+  }
+}

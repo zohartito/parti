@@ -1,0 +1,75 @@
+{
+  "id": "26_galapagos_setup_happy",
+  "description": "v0.8 Galapagos happy-path: user asks for a daylight-maximising Galapagos run with two sliders. The assistant first calls gh_plugin_check to confirm Galapagos is installed, then calls gh_galapagos_setup with both genomes and a daylight fitness clause, then ends the turn with a summary. Exercises the v0.8 gh_galapagos_setup tool shape against a clean two-tool, three-provider-call flow.",
+  "userPrompt": "Set up a Galapagos run to maximize daylight on my facade with two sliders: panel_depth 100-400mm and stagger 0-500mm.",
+  "providerScript": [
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        { "kind": "text", "text": "Before I wire up the solver, let me confirm Galapagos is installed." },
+        {
+          "kind": "tool_call",
+          "toolId": "toolu_check_galapagos_1",
+          "toolName": "gh_plugin_check",
+          "input": { "names": ["galapagos"] }
+        }
+      ]
+    },
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        { "kind": "text", "text": "Galapagos is present. Configuring the two genomes and the daylight fitness objective." },
+        {
+          "kind": "tool_call",
+          "toolId": "toolu_galapagos_setup_1",
+          "toolName": "gh_galapagos_setup",
+          "input": {
+            "genomes": [
+              { "slider_name": "panel_depth", "min": 100, "max": 400 },
+              { "slider_name": "stagger", "min": 0, "max": 500 }
+            ],
+            "fitness": { "metric": "daylight", "direction": "Maximize" }
+          }
+        }
+      ]
+    },
+    {
+      "stopReason": "end_turn",
+      "interactions": [
+        { "kind": "text", "text": "Galapagos setup is validated: two genomes (panel_depth, stagger) wired to a daylight-maximising fitness clause. Open the Galapagos Editor in Rhino and press Start to begin the search." }
+      ]
+    }
+  ],
+  "toolHandlers": {
+    "gh_plugin_check": {
+      "result": {
+        "status": "ok",
+        "plugins": [
+          { "name": "Galapagos", "version": "1.0", "kind": "Gha" }
+        ]
+      }
+    },
+    "gh_galapagos_setup": {
+      "result": {
+        "status": "pending_rhino",
+        "message": "Setup validated",
+        "validated": { "genome_count": 2, "fitness_metric": "daylight" }
+      }
+    }
+  },
+  "expected": {
+    "finalStopReason": "end_turn",
+    "finalStatus": "Finished",
+    "toolCallCount": 2,
+    "providerCallCount": 3,
+    "toolCallsMinCount": {
+      "gh_galapagos_setup": 1,
+      "gh_plugin_check": 1
+    },
+    "toolCallsMaxCount": {
+      "gh_octopus_setup": 0,
+      "gh_galapagos_run": 0
+    },
+    "finalTextContainsAny": ["galapagos", "setup", "daylight"]
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "id": "L08_find_component_voronoi",
+  "description": "A full brief that needs a component the model must look up (Voronoi): gh_find_component, then adds by the returned componentGuid.",
+  "userPrompt": "Make a 2D Voronoi paving pattern: 30 random points inside a 20 x 20 m rectangle, with the Voronoi cells clipped to it. Inputs: point count 10 to 50 and a random seed (mine). Rule: cells stay inside the rectangle. Principle: a random cellular partition for paving. Evaluation: keep the cell count equal to the point count. Build it.",
+  "canvas": "hermetic",
+  "expected": {
+    "terminalStatus": "Idle",
+    "decompositionComplete": true,
+    "toolCallsInclude": [
+      "gh_find_component"
+    ],
+    "canvasHasComponent": [
+      {
+        "componentGuid": "a4011be0-1c91-45bd-8280-17dd3a9f46f1",
+        "min": 1
+      }
+    ]
+  }
+}

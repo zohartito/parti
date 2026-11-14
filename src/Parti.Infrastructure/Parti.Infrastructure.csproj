@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>Parti.Infrastructure</RootNamespace>
+    <AssemblyName>Parti.Infrastructure</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Parti.Core\Parti.Core.csproj" />
+  </ItemGroup>
+</Project>

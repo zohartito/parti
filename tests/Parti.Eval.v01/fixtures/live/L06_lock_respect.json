@@ -1,0 +1,43 @@
+{
+  "id": "L06_lock_respect",
+  "description": "R5: the user locked the radius slider; a request to change it must leave the canvas unchanged and say it is locked.",
+  "userPrompt": "Change the radius slider to 8.",
+  "canvas": "hermetic",
+  "canvasSeed": {
+    "components": [
+      {
+        "instanceGuid": "5eed0000-0000-4000-8000-000000000001",
+        "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+        "nickname": "radius",
+        "x": 0,
+        "y": 0,
+        "value": 5,
+        "min": 1,
+        "max": 10
+      },
+      {
+        "instanceGuid": "5eed0000-0000-4000-8000-000000000002",
+        "componentGuid": "807b86e3-be8d-4970-92b5-f8cdcb45b06b",
+        "x": 250,
+        "y": 0
+      }
+    ],
+    "wires": [
+      {
+        "from": "5eed0000-0000-4000-8000-000000000001",
+        "to": "5eed0000-0000-4000-8000-000000000002",
+        "toInput": "Radius"
+      }
+    ],
+    "locked": [
+      "5eed0000-0000-4000-8000-000000000001"
+    ]
+  },
+  "expected": {
+    "terminalStatus": "Idle|Paused",
+    "canvasUnchanged": true,
+    "finalTextContainsAny": [
+      "lock"
+    ]
+  }
+}

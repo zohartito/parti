@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://parti.dev/schemas/gh-fixture.schema.json",
+  "title": "Parti GH fixture",
+  "description": "Schema for the fixture.json sidecar that accompanies before.gh / after.gh in a Parti eval v0.2 fixture folder. See docs/GH-FIXTURE-SPEC.md for full documentation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "title",
+    "description",
+    "userPrompt",
+    "category",
+    "difficulty",
+    "toolExpectations",
+    "canvasAssertions"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Fixture id: 3-digit zero-padded number, hyphen, kebab-case slug. Must equal the folder name.",
+      "pattern": "^[0-9]{3}-[a-z0-9]+(-[a-z0-9]+)*$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "userPrompt": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Verbatim prompt fed to the session. Natural-language phrasing only; do not reference tool names."
+    },
+    "category": {
+      "type": "string",
+      "enum": ["add", "edit", "describe", "connect", "mixed"]
+    },
+    "difficulty": {
+      "type": "string",
+      "enum": ["easy", "medium", "hard"]
+    },
+    "toolExpectations": {
+      "type": "array",
+      "description": "Bounds on tool-call counts. Omit tools you don't care about.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["tool", "minCalls", "maxCalls"],
+        "properties": {
+          "tool": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[a-z][a-z0-9_]*$"
+          },
+          "minCalls": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "maxCalls": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "canvasAssertions": {
+      "type": "array",
+      "description": "Predicate strings evaluated against after.gh. See the spec for the predicate vocabulary.",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 3
+      }
+    },
+    "notes": {
+      "type": "string"
+    }
+  }
+}

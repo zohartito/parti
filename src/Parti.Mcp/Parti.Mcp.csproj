@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Parti.Mcp</RootNamespace>
+    <AssemblyName>Parti.Mcp</AssemblyName>
+    <SuppressTfmSupportBuildWarnings>true</SuppressTfmSupportBuildWarnings>
+    <!-- ModelContextProtocol 1.2.0 ships an analyzer requiring Roslyn 4.8 (.NET 8 SDK).
+         Parti targets .NET 7. Suppressing CS9057 skips the analyzer load without affecting runtime. -->
+    <NoWarn>$(NoWarn);CS9057</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="ModelContextProtocol" Version="2.4.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Parti.Core\Parti.Core.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,26 @@
+{
+  "id": "L04_rainscreen",
+  "description": "R3: the rainscreen brief (depth and stagger inputs, thermal-break rule, minimise solar gain); decomposition and the input sliders.",
+  "userPrompt": "Set up the inputs for a staggered rainscreen facade. Inputs: panel course depth 0.1 to 0.4 m and horizontal stagger 0 to 0.5 of a panel width (both mine). Rule: the thermal break behind the panels must stay continuous. Principle: alternate course depths to break up the facade. Evaluation: minimise solar gain on the south facade, which I will check with an annual radiation study. Start by adding the depth and stagger sliders.",
+  "canvas": "hermetic",
+  "expected": {
+    "terminalStatus": "Idle",
+    "decompositionComplete": true,
+    "decompositionInputsInclude": [
+      "depth",
+      "stagger"
+    ],
+    "evaluationsInclude": [
+      {
+        "metric": "solar",
+        "direction": "MINIMIZE"
+      }
+    ],
+    "canvasHasComponent": [
+      {
+        "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+        "min": 2
+      }
+    ]
+  }
+}

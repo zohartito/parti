@@ -1,0 +1,14 @@
+[
+  { "query": "what's the single organizing idea behind this tower?", "should_trigger": true },
+  { "query": "give me the parti for this housing block in one sentence", "should_trigger": true },
+  { "query": "what's the main concept that ties this facade together?", "should_trigger": true },
+  { "query": "summarize the design intent as one declarative principle", "should_trigger": true },
+  { "query": "after the parameter sweep, what's the through-line that keeps it the same project?", "should_trigger": true },
+  { "query": "state the big idea for this canopy so the canvas can follow it", "should_trigger": true },
+  { "query": "what should I vary and what's fixed?", "should_trigger": false },
+  { "query": "add a slider for the height and connect it", "should_trigger": false },
+  { "query": "how do we measure whether it's working?", "should_trigger": false },
+  { "query": "optimize the panel angles for daylight", "should_trigger": false },
+  { "query": "fix my Rhino export line weights for the section", "should_trigger": false },
+  { "query": "nest the parts for the CNC router", "should_trigger": false }
+]

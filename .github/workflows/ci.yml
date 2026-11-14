@@ -1,0 +1,92 @@
+name: CI
+
+# Parti v0.7 CI.
+# Runs on windows-latest because Grasshopper/RhinoCommon NuGets reference
+# Windows-built assemblies. .NET 7 tests themselves are cross-platform, but
+# the plugin build targets Windows.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# Cancel in-flight runs on force-push or successive pushes to the same ref.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # gitleaks-action ships no windows_x64 tarball, so running it inside the
+  # Windows job made every CI run die at install with a 404 before the build
+  # was ever attempted. It stays in this workflow (rather than a separate
+  # file, per the earlier decision to fold it in) but on a runner it supports.
+  secret-scan:
+    name: Secret scan
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v7
+      with:
+        fetch-depth: 0
+        persist-credentials: false
+    - name: Run gitleaks
+      uses: gitleaks/gitleaks-action@v3
+      env:
+          # No GITLEAKS_LICENSE needed: gitleaks-action is free for personal
+          # (non-organization) GitHub accounts.
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build-test:
+    name: Build & Test (Windows)
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v7
+
+      with:
+        fetch-depth: 0
+    - name: Setup .NET 7 SDK
+      uses: actions/setup-dotnet@v6
+      with:
+        dotnet-version: 7.0.x
+
+    - name: Restore
+      run: dotnet restore Parti.sln
+
+    - name: Build
+      run: dotnet build Parti.sln --configuration Release --no-restore --nologo --verbosity minimal
+
+    # All four suites run here. Integration and Eval were dropped in #33 on a
+    # wrong diagnosis (rhcommon_c); the real cause was Parti.gha (TargetExt=.gha)
+    # landing in the test host's trusted assembly list. Parti.Components now
+    # builds Parti.dll and copies it to Parti.gha, so the hosts start.
+    - name: Test (all suites)
+      run: dotnet test Parti.sln --configuration Release --no-build --nologo --verbosity minimal --logger "trx" --results-directory ${{ runner.temp }}/TestResults
+
+    # Eval gate: run the eval suite in isolation and rely on its exit code.
+    # xUnit returns 0 only if every fixture passes (100% bar).
+    - name: Eval gate (Parti.Eval.v01 must pass)
+      run: dotnet test tests/Parti.Eval.v01/Parti.Eval.v01.csproj --configuration Release --no-build --nologo --verbosity minimal --logger "trx;LogFileName=eval-gate.trx" --results-directory ${{ runner.temp }}/TestResults
+
+    - name: Upload TRX test results
+      if: always()
+      uses: actions/upload-artifact@v7
+      with:
+        name: test-results-trx
+        path: ${{ runner.temp }}/TestResults/**/*.trx
+        if-no-files-found: warn
+
+    - name: Upload Parti.gha artifact
+      if: success()
+      uses: actions/upload-artifact@v7
+      with:
+        name: parti-gha
+        path: src/Parti.Components/bin/Release/net7.0/Parti.gha
+        if-no-files-found: warn
+permissions:
+  contents: read
+  pull-requests: read

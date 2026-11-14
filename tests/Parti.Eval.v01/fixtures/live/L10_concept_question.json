@@ -1,0 +1,17 @@
+{
+  "id": "L10_concept_question",
+  "description": "A conceptual question needs no tools and no writes.",
+  "userPrompt": "What does the Graph Mapper component do, and when would I use it?",
+  "canvas": "hermetic",
+  "expected": {
+    "terminalStatus": "Idle",
+    "planReviewCount": 0,
+    "canvasUnchanged": true,
+    "finalTextContainsAny": [
+      "graph",
+      "curve",
+      "remap",
+      "mapping"
+    ]
+  }
+}

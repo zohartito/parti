@@ -1,0 +1,36 @@
+{
+  "id": "L09_small_edit_wire",
+  "description": "A small edit on an existing canvas (wire the slider into the circle); the gate still needs a recorded decomposition first.",
+  "userPrompt": "Connect the radius slider to the circle's radius input.",
+  "canvas": "hermetic",
+  "canvasSeed": {
+    "components": [
+      {
+        "instanceGuid": "5eed0000-0000-4000-8000-000000000001",
+        "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+        "nickname": "radius",
+        "x": 0,
+        "y": 0,
+        "value": 5,
+        "min": 1,
+        "max": 10
+      },
+      {
+        "instanceGuid": "5eed0000-0000-4000-8000-000000000002",
+        "componentGuid": "807b86e3-be8d-4970-92b5-f8cdcb45b06b",
+        "x": 250,
+        "y": 0
+      }
+    ]
+  },
+  "expected": {
+    "terminalStatus": "Idle",
+    "canvasWireCount": 1,
+    "canvasHasWire": [
+      {
+        "from": "57da07bd-ecab-415d-9d86-af36d7073abc",
+        "to": "807b86e3-be8d-4970-92b5-f8cdcb45b06b"
+      }
+    ]
+  }
+}

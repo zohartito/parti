@@ -1,0 +1,21 @@
+{
+  "id": "L07_unknown_plugin",
+  "description": "A plugin that is not installed (Weaverbird): the model checks the loaded libraries and says so instead of inventing components.",
+  "userPrompt": "Use Weaverbird's Catmull-Clark subdivision to smooth a 10 x 10 x 4 m box mesh, two levels.",
+  "canvas": "hermetic",
+  "expected": {
+    "terminalStatus": "Idle|Paused",
+    "toolCallsInclude": [
+      "gh_plugin_check"
+    ],
+    "finalTextContainsAny": [
+      "not installed",
+      "isn't installed",
+      "not available",
+      "isn't available",
+      "not loaded",
+      "isn't loaded",
+      "not found"
+    ]
+  }
+}

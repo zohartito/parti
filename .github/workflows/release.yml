@@ -1,0 +1,74 @@
+name: Release
+
+# Draft GitHub Release on tag push. Does NOT publish — the release is left
+# as a draft so the maintainer can review build output, add release notes,
+# and click Publish manually.
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  draft-release:
+    name: Build .gha & draft release
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup .NET 7 SDK
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 7.0.x
+
+      - name: Restore
+        run: dotnet restore Parti.sln
+
+      - name: Build Parti.Components (Release)
+        run: dotnet build src/Parti.Components/Parti.Components.csproj --configuration Release --no-restore --nologo --verbosity minimal
+
+      # Same layout as packaging/build_package.sh: a Parti/ folder holding Parti.gha,
+      # every Parti.*.dll it loads, and the license files. A lone Parti.gha cannot load
+      # its dependencies. Parti.dll (identical to Parti.gha) and pdbs are left out;
+      # Newtonsoft.Json is not shipped because Rhino 8 provides it.
+      #
+      # The .yak package is NOT built here: the Yak CLI ships with Rhino and is not
+      # on GitHub runners. Build it locally with packaging/build_package.sh.
+      - name: Zip plugin folder
+        shell: pwsh
+        run: |
+          $bin   = "src/Parti.Components/bin/Release/net7.0"
+          $stage = "packaging/out/Parti"
+          $dest  = "Parti-${{ github.ref_name }}.zip"
+          if (-not (Test-Path "$bin/Parti.gha")) { throw "Parti.gha not found in $bin" }
+          New-Item -ItemType Directory -Force -Path $stage | Out-Null
+          Copy-Item "$bin/Parti.gha" $stage
+          Get-ChildItem "$bin/Parti.*.dll" | Copy-Item -Destination $stage
+          $deps = Get-Content "$bin/Parti.deps.json" -Raw
+          foreach ($dll in ([regex]::Matches($deps, '"(Parti\.[A-Za-z.]*\.dll)"') | ForEach-Object { $_.Groups[1].Value } | Sort-Object -Unique)) {
+            if ($dll -ne "Parti.dll" -and -not (Test-Path "$stage/$dll")) { throw "$dll listed in Parti.deps.json but not staged" }
+          }
+          Copy-Item LICENSE, COPYING.LESSER, ATTRIBUTION.md, docs/NOTICES.md $stage
+          Compress-Archive -Path $stage -DestinationPath $dest -Force
+          Get-ChildItem $stage | ForEach-Object { Write-Host "  $($_.Name)" }
+          Write-Host "Created $dest"
+
+      - name: Draft GitHub Release
+        uses: softprops/action-gh-release@v3
+        with:
+          draft: true
+          prerelease: false
+          name: Parti ${{ github.ref_name }}
+          tag_name: ${{ github.ref_name }}
+          files: |
+            Parti-${{ github.ref_name }}.zip
+          body: |
+            Draft release for ${{ github.ref_name }}.
+
+            Replace this body with release notes before publishing.

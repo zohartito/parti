@@ -1,0 +1,40 @@
+{
+  "id": "08_max_turns_exhausted",
+  "description": "The model keeps reading the canvas past the MaxTurns budget; the loop ends with the turn-limit error.",
+  "userPrompt": "keep checking the canvas",
+  "sessionOptions": {
+    "maxTurns": 3,
+    "maxToolPasses": 10
+  },
+  "providerScript": [
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "tool_call",
+          "toolName": "gh_get_all",
+          "input": {},
+          "toolId": "toolu_loop"
+        }
+      ]
+    }
+  ],
+  "toolHandlers": {
+    "gh_get_all": {
+      "result": {
+        "status": "success",
+        "documentId": "canned-doc",
+        "count": 0,
+        "nodes": []
+      }
+    }
+  },
+  "expected": {
+    "terminalStatus": "Error",
+    "finalStatus": "Error",
+    "toolCallCount": 3,
+    "providerCallCount": 3,
+    "errorContains": "Max turns",
+    "planReviewCount": 0
+  }
+}

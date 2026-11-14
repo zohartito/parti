@@ -1,0 +1,130 @@
+{
+  "id": "11_add_connect",
+  "description": "Hermetic canvas: decompose, add a slider and a panel in one reviewed batch, then wire them by the returned instance GUIDs.",
+  "userPrompt": "Add a radius slider (1 to 10 m) and a panel, connect the slider output to the panel input; keep the area under 50 m2.",
+  "canvas": "hermetic",
+  "providerScript": [
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "text",
+          "text": "Recording the brief first."
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "parti_record_decomposition",
+          "input": {
+            "inputs": [
+              {
+                "name": "radius",
+                "domain": "1..10",
+                "unit": "m",
+                "source": "user_stated"
+              }
+            ],
+            "rules": [
+              {
+                "statement": "circle centred on the world origin in the XY plane",
+                "source": "user_stated"
+              }
+            ],
+            "principle": "one-parameter circular footprint",
+            "evaluations": [
+              {
+                "metric": "footprint area",
+                "direction": "KEEP",
+                "target": 50,
+                "source": "assumed"
+              }
+            ]
+          },
+          "toolId": "toolu_rec"
+        }
+      ]
+    },
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 0,
+            "y": 0
+          },
+          "toolId": "toolu_a1"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "59e0b89a-e487-49f8-bab8-b5bab16be14c",
+            "x": 250,
+            "y": 0
+          },
+          "toolId": "toolu_a2"
+        }
+      ]
+    },
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "tool_call",
+          "toolName": "gh_connect",
+          "input": {
+            "from": "c0000000-0000-4000-8000-000000000001",
+            "fromOutput": 0,
+            "to": "c0000000-0000-4000-8000-000000000002",
+            "toInput": 0
+          },
+          "toolId": "toolu_c1"
+        }
+      ]
+    },
+    {
+      "stopReason": "end_turn",
+      "interactions": [
+        {
+          "kind": "text",
+          "text": "Added both and wired them: the slider is now feeding the panel."
+        }
+      ]
+    }
+  ],
+  "expected": {
+    "terminalStatus": "Idle",
+    "finalStopReason": "end_turn",
+    "finalStatus": "Finished",
+    "minInteractions": 9,
+    "textContains": "feeding",
+    "toolCallCount": 3,
+    "providerCallCount": 4,
+    "planReviewCount": 2,
+    "planLabelsContain": [
+      "Number Slider [Params/Input · Grasshopper]",
+      "Panel [Params/Input · Grasshopper]"
+    ],
+    "canvasHasComponent": [
+      {
+        "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "componentGuid": "59e0b89a-e487-49f8-bab8-b5bab16be14c",
+        "min": 1,
+        "max": 1
+      }
+    ],
+    "canvasWireCount": 1,
+    "canvasHasWire": [
+      {
+        "from": "57da07bd-ecab-415d-9d86-af36d7073abc",
+        "to": "59e0b89a-e487-49f8-bab8-b5bab16be14c"
+      }
+    ]
+  }
+}

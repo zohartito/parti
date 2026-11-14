@@ -1,0 +1,21 @@
+{
+  "id": "000-example",
+  "title": "Template fixture demonstrating every field",
+  "description": "Reference fixture for Parti eval v0.2. Exercises every field in the sidecar schema so it can be copied as a starting point. Not a runnable fixture — the .gh files are intentionally absent.",
+  "userPrompt": "add a slider called radius, a circle, and wire the slider into the circle's radius input",
+  "category": "mixed",
+  "difficulty": "medium",
+  "toolExpectations": [
+    { "tool": "gh_add_component", "minCalls": 2, "maxCalls": 2 },
+    { "tool": "gh_set_input", "minCalls": 0, "maxCalls": 1 },
+    { "tool": "gh_connect", "minCalls": 1, "maxCalls": 1 }
+  ],
+  "canvasAssertions": [
+    "componentExists: Slider named 'radius'",
+    "componentExists: Circle",
+    "componentCount: Circle == 1",
+    "connectionExists: Slider radius → Circle R",
+    "inputValue: Slider named 'radius' value == 5.0"
+  ],
+  "notes": "Template only. Copy this folder, rename to <NNN>-<slug>, and replace before.gh / after.gh / the fixture.json fields. See docs/GH-FIXTURE-SPEC.md."
+}

@@ -1,0 +1,98 @@
+{
+  "id": "41_decompose_then_write_passes",
+  "description": "A complete decomposition (sole call) opens the gate: the add reaches the reviewer with the catalog label and lands on the canvas.",
+  "userPrompt": "Make a circle whose radius comes from a slider, 1 to 10 m; keep the footprint area under 50 m2.",
+  "canvas": "hermetic",
+  "providerScript": [
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "text",
+          "text": "Recording the brief first."
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "parti_record_decomposition",
+          "input": {
+            "inputs": [
+              {
+                "name": "radius",
+                "domain": "1..10",
+                "unit": "m",
+                "source": "user_stated"
+              }
+            ],
+            "rules": [
+              {
+                "statement": "circle centred on the world origin in the XY plane",
+                "source": "user_stated"
+              }
+            ],
+            "principle": "one-parameter circular footprint",
+            "evaluations": [
+              {
+                "metric": "footprint area",
+                "direction": "KEEP",
+                "target": 50,
+                "source": "assumed"
+              }
+            ]
+          },
+          "toolId": "toolu_rec"
+        }
+      ]
+    },
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 0,
+            "y": 0
+          },
+          "toolId": "toolu_add_ok"
+        }
+      ]
+    },
+    {
+      "stopReason": "end_turn",
+      "interactions": [
+        {
+          "kind": "text",
+          "text": "Recorded the brief and added the radius slider."
+        }
+      ]
+    }
+  ],
+  "expected": {
+    "terminalStatus": "Idle",
+    "finalStopReason": "end_turn",
+    "gateRejections": 0,
+    "planReviewCount": 1,
+    "toolCallCount": 1,
+    "planLabelsContain": [
+      "Number Slider [Params/Input · Grasshopper]"
+    ],
+    "decompositionComplete": true,
+    "decompositionInputsInclude": [
+      "radius"
+    ],
+    "evaluationsInclude": [
+      {
+        "metric": "footprint area",
+        "direction": "KEEP"
+      }
+    ],
+    "canvasHasComponent": [
+      {
+        "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+        "min": 1,
+        "max": 1
+      }
+    ]
+  }
+}

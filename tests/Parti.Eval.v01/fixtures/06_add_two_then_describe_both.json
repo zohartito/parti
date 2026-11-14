@@ -1,0 +1,178 @@
+{
+  "id": "06_add_two_then_describe_both",
+  "description": "Decompose, two adds and two describes across four tool passes (sequence handlers), then a summary.",
+  "userPrompt": "Add a radius slider (1 to 10 m) and a panel to show it, keep the area under 50 m2, then describe both.",
+  "providerScript": [
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "text",
+          "text": "Recording the brief first."
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "parti_record_decomposition",
+          "input": {
+            "inputs": [
+              {
+                "name": "radius",
+                "domain": "1..10",
+                "unit": "m",
+                "source": "user_stated"
+              }
+            ],
+            "rules": [
+              {
+                "statement": "circle centred on the world origin in the XY plane",
+                "source": "user_stated"
+              }
+            ],
+            "principle": "one-parameter circular footprint",
+            "evaluations": [
+              {
+                "metric": "footprint area",
+                "direction": "KEEP",
+                "target": 50,
+                "source": "assumed"
+              }
+            ]
+          },
+          "toolId": "toolu_rec"
+        }
+      ]
+    },
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 50,
+            "y": 50
+          },
+          "toolId": "toolu_add_a"
+        }
+      ]
+    },
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "59e0b89a-e487-49f8-bab8-b5bab16be14c",
+            "x": 300,
+            "y": 50
+          },
+          "toolId": "toolu_add_b"
+        }
+      ]
+    },
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "tool_call",
+          "toolName": "gh_describe",
+          "input": {
+            "target": "3f2a9c10-0000-4000-8000-000000000010"
+          },
+          "toolId": "toolu_desc_a"
+        }
+      ]
+    },
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "tool_call",
+          "toolName": "gh_describe",
+          "input": {
+            "target": "3f2a9c10-0000-4000-8000-000000000011"
+          },
+          "toolId": "toolu_desc_b"
+        }
+      ]
+    },
+    {
+      "stopReason": "end_turn",
+      "interactions": [
+        {
+          "kind": "text",
+          "text": "Added both: a Number Slider at (50, 50) and a Panel at (300, 50)."
+        }
+      ]
+    }
+  ],
+  "toolHandlers": {
+    "gh_add_component": {
+      "sequence": [
+        {
+          "status": "success",
+          "instanceGuid": "3f2a9c10-0000-4000-8000-000000000010",
+          "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+          "canonicalName": "Number Slider",
+          "nickname": "",
+          "pivot": {
+            "x": 50,
+            "y": 50
+          }
+        },
+        {
+          "status": "success",
+          "instanceGuid": "3f2a9c10-0000-4000-8000-000000000011",
+          "componentGuid": "59e0b89a-e487-49f8-bab8-b5bab16be14c",
+          "canonicalName": "Panel",
+          "nickname": "",
+          "pivot": {
+            "x": 300,
+            "y": 50
+          }
+        }
+      ]
+    },
+    "gh_describe": {
+      "sequence": [
+        {
+          "status": "success",
+          "instanceGuid": "3f2a9c10-0000-4000-8000-000000000010",
+          "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+          "name": "Number Slider",
+          "value": {
+            "current": 0.5,
+            "min": 0,
+            "max": 1,
+            "decimalPlaces": 3
+          }
+        },
+        {
+          "status": "success",
+          "instanceGuid": "3f2a9c10-0000-4000-8000-000000000011",
+          "componentGuid": "59e0b89a-e487-49f8-bab8-b5bab16be14c",
+          "name": "Panel",
+          "value": {
+            "text": ""
+          }
+        }
+      ]
+    }
+  },
+  "expected": {
+    "terminalStatus": "Idle",
+    "finalStopReason": "end_turn",
+    "finalStatus": "Finished",
+    "minInteractions": 12,
+    "textContains": "Added both",
+    "toolCallCount": 4,
+    "providerCallCount": 6,
+    "planReviewCount": 2,
+    "planLabelsContain": [
+      "Number Slider [Params/Input · Grasshopper]",
+      "Panel [Params/Input · Grasshopper]"
+    ]
+  }
+}

@@ -1,0 +1,49 @@
+# .NET
+bin/
+obj/
+*.user
+*.suo
+*.userprefs
+.vs/
+.vscode/
+*.pdb
+*.dll
+*.nupkg
+
+# Rhino build outputs
+*.gha
+*.rhp
+
+# Python (MCP server)
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+.pytest_cache/
+*.egg-info/
+
+# Eval outputs
+bench/runs/
+# bench/results/ is tracked: live-eval result files are the evidence behind docs/EVAL-LIVE.md.
+
+# Loop artifacts (until-green fixer JSON)
+tools/loop/artifacts/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets
+.env
+.env.local
+*.key
+
+# Research references (cloned repos, local scratch — not part of Parti source).
+# Anchored: an unanchored `research/` also hides nested folders like tasks/research/.
+/research/
+
+# CodeGraph index (local to each machine)
+.codegraph/
+
+# Packaging outputs (packaging/build_package.sh)
+packaging/out/

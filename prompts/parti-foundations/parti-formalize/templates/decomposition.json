@@ -1,0 +1,32 @@
+{
+  "inputs": [
+    {
+      "name": "panel_depth_mm",
+      "domain": "100..400",
+      "unit": "mm"
+    },
+    {
+      "name": "panel_shape",
+      "domain": "square|hex|triangle",
+      "unit": null
+    }
+  ],
+  "rules": [
+    {
+      "statement": "Panels must not overlap adjacent panels."
+    },
+    {
+      "statement": "Every panel must remain attached to the facade grid."
+    }
+  ],
+  "principle": "Rainscreen with alternating course depths.",
+  "evaluations": [
+    {
+      "metric": "south_facade_sun_hours_annual",
+      "direction": "Maximize",
+      "target": null
+    }
+  ],
+  "feedback_plan": "Ladybug annual sun hours simulation against the site's EPW file."
+}
+

@@ -1,0 +1,134 @@
+{
+  "id": "20_group_workflow",
+  "description": "Hermetic canvas: decompose, add two sliders in one reviewed batch, then group them by instance GUID.",
+  "userPrompt": "Add two number sliders (width and depth, 1 to 5 m each) and group them together; keep the area under 25 m2.",
+  "canvas": "hermetic",
+  "providerScript": [
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "text",
+          "text": "Recording the brief first."
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "parti_record_decomposition",
+          "input": {
+            "inputs": [
+              {
+                "name": "width",
+                "domain": "1..5",
+                "unit": "m",
+                "source": "user_stated"
+              },
+              {
+                "name": "depth",
+                "domain": "1..5",
+                "unit": "m",
+                "source": "user_stated"
+              }
+            ],
+            "rules": [
+              {
+                "statement": "rectangle footprint from width and depth",
+                "source": "user_stated"
+              }
+            ],
+            "principle": "two-parameter rectangular footprint",
+            "evaluations": [
+              {
+                "metric": "footprint area",
+                "direction": "KEEP",
+                "target": 25,
+                "source": "user_stated"
+              }
+            ]
+          },
+          "toolId": "toolu_rec"
+        }
+      ]
+    },
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 0,
+            "y": 0
+          },
+          "toolId": "toolu_g1"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 0,
+            "y": 60
+          },
+          "toolId": "toolu_g2"
+        }
+      ]
+    },
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "tool_call",
+          "toolName": "gh_group",
+          "input": {
+            "targets": [
+              "c0000000-0000-4000-8000-000000000001",
+              "c0000000-0000-4000-8000-000000000002"
+            ],
+            "nickname": "Inputs"
+          },
+          "toolId": "toolu_grp"
+        }
+      ]
+    },
+    {
+      "stopReason": "end_turn",
+      "interactions": [
+        {
+          "kind": "text",
+          "text": "Added both sliders and grouped them as \"Inputs\"."
+        }
+      ]
+    }
+  ],
+  "expected": {
+    "terminalStatus": "Idle",
+    "finalStopReason": "end_turn",
+    "finalStatus": "Finished",
+    "planReviewCount": 2,
+    "toolCallsMinCount": {
+      "gh_add_component": 2,
+      "gh_group": 1
+    },
+    "toolCallsMaxCount": {
+      "gh_delete": 0
+    },
+    "finalTextContainsAny": [
+      "grouped",
+      "group"
+    ],
+    "canvasHasComponent": [
+      {
+        "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+        "min": 2,
+        "max": 2
+      }
+    ],
+    "evaluationsInclude": [
+      {
+        "metric": "area",
+        "direction": "KEEP"
+      }
+    ]
+  }
+}

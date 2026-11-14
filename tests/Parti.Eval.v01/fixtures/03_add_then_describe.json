@@ -1,0 +1,129 @@
+{
+  "id": "03_add_then_describe",
+  "description": "Decompose, add a Panel by componentGuid, then describe it by the instance GUID the add returned.",
+  "userPrompt": "Add a panel that reports the circle area (radius 1 to 10 m, keep area under 50 m2) and tell me about it.",
+  "providerScript": [
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "text",
+          "text": "Recording the brief first."
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "parti_record_decomposition",
+          "input": {
+            "inputs": [
+              {
+                "name": "radius",
+                "domain": "1..10",
+                "unit": "m",
+                "source": "user_stated"
+              }
+            ],
+            "rules": [
+              {
+                "statement": "circle centred on the world origin in the XY plane",
+                "source": "user_stated"
+              }
+            ],
+            "principle": "one-parameter circular footprint",
+            "evaluations": [
+              {
+                "metric": "footprint area",
+                "direction": "KEEP",
+                "target": 50,
+                "source": "assumed"
+              }
+            ]
+          },
+          "toolId": "toolu_rec"
+        }
+      ]
+    },
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "59e0b89a-e487-49f8-bab8-b5bab16be14c",
+            "x": 200,
+            "y": 150
+          },
+          "toolId": "toolu_add_1"
+        }
+      ]
+    },
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "tool_call",
+          "toolName": "gh_describe",
+          "input": {
+            "target": "3f2a9c10-0000-4000-8000-000000000001"
+          },
+          "toolId": "toolu_desc_1"
+        }
+      ]
+    },
+    {
+      "stopReason": "end_turn",
+      "interactions": [
+        {
+          "kind": "text",
+          "text": "The Panel sits at (200, 150) and has no inputs connected yet."
+        }
+      ]
+    }
+  ],
+  "toolHandlers": {
+    "gh_add_component": {
+      "result": {
+        "status": "success",
+        "instanceGuid": "3f2a9c10-0000-4000-8000-000000000001",
+        "componentGuid": "59e0b89a-e487-49f8-bab8-b5bab16be14c",
+        "canonicalName": "Panel",
+        "nickname": "",
+        "pivot": {
+          "x": 200,
+          "y": 150
+        }
+      }
+    },
+    "gh_describe": {
+      "result": {
+        "status": "success",
+        "instanceGuid": "3f2a9c10-0000-4000-8000-000000000001",
+        "componentGuid": "59e0b89a-e487-49f8-bab8-b5bab16be14c",
+        "name": "Panel",
+        "nickname": "",
+        "category": "Params",
+        "subcategory": "Input",
+        "pivot": {
+          "x": 200,
+          "y": 150
+        },
+        "value": {
+          "text": ""
+        }
+      }
+    }
+  },
+  "expected": {
+    "terminalStatus": "Idle",
+    "finalStopReason": "end_turn",
+    "finalStatus": "Finished",
+    "minInteractions": 8,
+    "textContains": "Panel",
+    "toolCallCount": 2,
+    "providerCallCount": 4,
+    "planReviewCount": 1,
+    "planLabelsContain": [
+      "Panel [Params/Input · Grasshopper]"
+    ]
+  }
+}

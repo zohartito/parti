@@ -1,0 +1,100 @@
+{
+  "id": "47_conflicting_type_and_component_guid_rejected",
+  "description": "A1 blocker: an add carrying a second identity (type) or an undeclared field (nickname) is rejected by the strict guard before review; nothing is added.",
+  "userPrompt": "Add a number slider for the circle radius (1 to 10 m, keep area under 50 m2).",
+  "canvas": "hermetic",
+  "providerScript": [
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "text",
+          "text": "Recording the brief first."
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "parti_record_decomposition",
+          "input": {
+            "inputs": [
+              {
+                "name": "radius",
+                "domain": "1..10",
+                "unit": "m",
+                "source": "user_stated"
+              }
+            ],
+            "rules": [
+              {
+                "statement": "circle centred on the world origin in the XY plane",
+                "source": "user_stated"
+              }
+            ],
+            "principle": "one-parameter circular footprint",
+            "evaluations": [
+              {
+                "metric": "footprint area",
+                "direction": "KEEP",
+                "target": 50,
+                "source": "assumed"
+              }
+            ]
+          },
+          "toolId": "toolu_rec"
+        }
+      ]
+    },
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "type": "807b86e3-be8d-4970-92b5-f8cdcb45b06b",
+            "nickname": "Number Slider",
+            "x": 0,
+            "y": 0
+          },
+          "toolId": "toolu_add_conflict"
+        }
+      ]
+    },
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "nickname": "Radius",
+            "x": 0,
+            "y": 0
+          },
+          "toolId": "toolu_add_undeclared"
+        }
+      ]
+    },
+    {
+      "stopReason": "end_turn",
+      "interactions": [
+        {
+          "kind": "text",
+          "text": "Both adds were rejected by the host: only componentGuid, x and y are accepted."
+        }
+      ]
+    }
+  ],
+  "expected": {
+    "terminalStatus": "Idle",
+    "finalStopReason": "end_turn",
+    "planReviewCount": 0,
+    "toolCallCount": 0,
+    "canvasUnchanged": true,
+    "rejectionMessagesContain": [
+      "'type' is not accepted",
+      "does not declare the argument 'nickname'"
+    ]
+  }
+}

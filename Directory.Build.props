@@ -1,0 +1,21 @@
+<Project>
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <!-- Single source of truth for the release version. PartiInfo.Version and
+         packaging/build_package.sh both read it. -->
+    <Version>0.9.1</Version>
+
+    <Authors>Zohar Tito</Authors>
+    <Company>Parti</Company>
+    <Product>Parti</Product>
+    <Copyright>Copyright (c) 2026 Zohar Tito</Copyright>
+    <PackageLicenseExpression>LGPL-3.0-or-later</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/zohartito/parti</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+</Project>

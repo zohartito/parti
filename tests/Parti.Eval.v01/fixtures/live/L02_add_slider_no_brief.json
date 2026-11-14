@@ -1,0 +1,11 @@
+{
+  "id": "L02_add_slider_no_brief",
+  "description": "R2: \"add a slider\" with no brief must not write; the product expects the model to pause with ask_user.",
+  "userPrompt": "Add a slider.",
+  "canvas": "hermetic",
+  "expected": {
+    "terminalStatus": "Paused",
+    "planReviewCount": 0,
+    "canvasUnchanged": true
+  }
+}

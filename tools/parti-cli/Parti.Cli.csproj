@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Parti.Cli</RootNamespace>
+    <AssemblyName>parti-cli</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Parti.Core\Parti.Core.csproj" />
+    <ProjectReference Include="..\..\src\Parti.Core.Grasshopper\Parti.Core.Grasshopper.csproj" />
+    <ProjectReference Include="..\..\src\Parti.Providers.Anthropic\Parti.Providers.Anthropic.csproj" />
+  </ItemGroup>
+</Project>

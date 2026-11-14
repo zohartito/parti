@@ -1,0 +1,56 @@
+{
+  "id": "27_galapagos_run_manual_start",
+  "description": "v0.8 Galapagos run flow: user asks the assistant to start the optimizer for 50 generations. The tool returns status=manual_start_required (Galapagos cannot be driven headlessly) and the assistant closes the turn by instructing the user to press Start in the Galapagos Editor manually. Exercises the gh_galapagos_run tool shape and the manual-start fallback contract.",
+  "userPrompt": "Ok, start the optimization for 50 generations.",
+  "providerScript": [
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        { "kind": "text", "text": "Requesting a 50-generation run from the Galapagos runner." },
+        {
+          "kind": "tool_call",
+          "toolId": "toolu_galapagos_run_1",
+          "toolName": "gh_galapagos_run",
+          "input": {
+            "max_generations": 50,
+            "population_size": 50,
+            "timeout_seconds": 300
+          }
+        }
+      ]
+    },
+    {
+      "stopReason": "end_turn",
+      "interactions": [
+        { "kind": "text", "text": "Galapagos cannot be started headlessly, so you need to press Start in the Galapagos Editor manually. Your 50-generation cap and population of 50 have been staged." }
+      ]
+    }
+  ],
+  "toolHandlers": {
+    "gh_galapagos_run": {
+      "result": {
+        "status": "manual_start_required",
+        "message": "Galapagos requires manual Start click in the Editor.",
+        "clamped_parameters": {
+          "max_generations": 50,
+          "population_size": 50,
+          "timeout_seconds": 300
+        }
+      }
+    }
+  },
+  "expected": {
+    "finalStopReason": "end_turn",
+    "finalStatus": "Finished",
+    "toolCallCount": 1,
+    "providerCallCount": 2,
+    "toolCallsMinCount": {
+      "gh_galapagos_run": 1
+    },
+    "toolCallsMaxCount": {
+      "gh_octopus_setup": 0,
+      "gh_galapagos_setup": 0
+    },
+    "finalTextContainsAny": ["start", "press", "galapagos editor", "manually"]
+  }
+}

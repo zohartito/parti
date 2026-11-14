@@ -1,0 +1,59 @@
+{
+  "id": "05_list_selected",
+  "description": "Model inspects only the selection via gh_get_selected, then summarises it.",
+  "userPrompt": "what did I just select?",
+  "providerScript": [
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "tool_call",
+          "toolName": "gh_get_selected",
+          "input": {},
+          "toolId": "toolu_sel"
+        }
+      ]
+    },
+    {
+      "stopReason": "end_turn",
+      "interactions": [
+        {
+          "kind": "text",
+          "text": "You selected 1 component: a Number Slider."
+        }
+      ]
+    }
+  ],
+  "toolHandlers": {
+    "gh_get_selected": {
+      "result": {
+        "status": "success",
+        "documentId": "canned-doc",
+        "count": 1,
+        "nodes": [
+          {
+            "id": "3f2a9c10-0000-4000-8000-000000000001",
+            "iid": "3f2a9c10-0000-4000-8000-000000000001",
+            "documentId": "canned-doc",
+            "ref": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "n": "Number Slider",
+            "pos": [
+              0,
+              0
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "expected": {
+    "terminalStatus": "Idle",
+    "finalStopReason": "end_turn",
+    "finalStatus": "Finished",
+    "minInteractions": 4,
+    "textContains": "1 component",
+    "toolCallCount": 1,
+    "providerCallCount": 2,
+    "planReviewCount": 0
+  }
+}

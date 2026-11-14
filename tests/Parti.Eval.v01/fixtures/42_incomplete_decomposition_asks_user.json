@@ -1,0 +1,83 @@
+{
+  "id": "42_incomplete_decomposition_asks_user",
+  "description": "A decomposition with inputs only records as incomplete; the next write is gated (missing pillars) and the model asks the user.",
+  "userPrompt": "Make a slider for the tower height, 20 to 80 m.",
+  "canvas": "hermetic",
+  "providerScript": [
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "tool_call",
+          "toolName": "parti_record_decomposition",
+          "input": {
+            "inputs": [
+              {
+                "name": "tower height",
+                "domain": "20..80",
+                "unit": "m",
+                "source": "user_stated"
+              }
+            ],
+            "rules": [],
+            "principle": "tower massing driven by height",
+            "evaluations": []
+          },
+          "toolId": "toolu_rec_partial"
+        }
+      ]
+    },
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 0,
+            "y": 0
+          },
+          "toolId": "toolu_add_partial"
+        }
+      ]
+    },
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "text",
+          "text": "I still need to know how you will judge the result."
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "ask_user",
+          "input": {
+            "questions": [
+              {
+                "id": "evaluation",
+                "prompt": "What should the height optimise or keep (e.g. floor area, shadow)?",
+                "kind": "text"
+              }
+            ]
+          },
+          "toolId": "toolu_ask_eval"
+        }
+      ]
+    }
+  ],
+  "expected": {
+    "terminalStatus": "Paused",
+    "decompositionComplete": false,
+    "gateRejections": 1,
+    "planReviewCount": 0,
+    "toolCallCount": 0,
+    "canvasUnchanged": true,
+    "pausedWith": [
+      "evaluation"
+    ],
+    "decompositionInputsInclude": [
+      "height"
+    ]
+  }
+}

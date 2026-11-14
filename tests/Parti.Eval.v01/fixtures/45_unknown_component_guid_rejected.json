@@ -1,0 +1,82 @@
+{
+  "id": "45_unknown_component_guid_rejected",
+  "description": "A componentGuid that is not installed is rejected by the catalog policy before review; nothing is added.",
+  "userPrompt": "Add the widget component for the circle radius (1 to 10 m, keep area under 50 m2).",
+  "canvas": "hermetic",
+  "providerScript": [
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "text",
+          "text": "Recording the brief first."
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "parti_record_decomposition",
+          "input": {
+            "inputs": [
+              {
+                "name": "radius",
+                "domain": "1..10",
+                "unit": "m",
+                "source": "user_stated"
+              }
+            ],
+            "rules": [
+              {
+                "statement": "circle centred on the world origin in the XY plane",
+                "source": "user_stated"
+              }
+            ],
+            "principle": "one-parameter circular footprint",
+            "evaluations": [
+              {
+                "metric": "footprint area",
+                "direction": "KEEP",
+                "target": 50,
+                "source": "assumed"
+              }
+            ]
+          },
+          "toolId": "toolu_rec"
+        }
+      ]
+    },
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "00000000-1111-4222-8333-444444444444",
+            "x": 0,
+            "y": 0
+          },
+          "toolId": "toolu_add_ghost"
+        }
+      ]
+    },
+    {
+      "stopReason": "end_turn",
+      "interactions": [
+        {
+          "kind": "text",
+          "text": "That component is not installed here; use gh_find_component to pick an installed one."
+        }
+      ]
+    }
+  ],
+  "expected": {
+    "terminalStatus": "Idle",
+    "finalStopReason": "end_turn",
+    "catalogRejections": 1,
+    "planReviewCount": 0,
+    "toolCallCount": 0,
+    "canvasUnchanged": true,
+    "rejectionMessagesContain": [
+      "is not installed in this Grasshopper"
+    ]
+  }
+}

@@ -1,0 +1,25 @@
+version: 2
+updates:
+  - package-ecosystem: "nuget"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    target-branch: "main"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+    ignore:
+      # Parti binds to the Newtonsoft.Json that Rhino ships (13.0.3 in Rhino 8.35).
+      # Compiling against a newer one breaks every tool call inside Rhino.
+      # Guarded by RhinoRuntimeCompatibilityTests.
+      - dependency-name: "Newtonsoft.Json"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    target-branch: "main"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "ci"

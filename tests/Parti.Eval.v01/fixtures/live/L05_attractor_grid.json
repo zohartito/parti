@@ -1,0 +1,27 @@
+{
+  "id": "L05_attractor_grid",
+  "description": "Attractor grid: grid of points, circles whose radius shrinks with distance to an attractor; needs discovery of several components.",
+  "userPrompt": "Build an attractor grid: a rectangular grid of points (5 to 20 points per side, spacing 1 to 3 m) and a circle at every point whose radius shrinks with the distance to an attractor point. Inputs: grid count, spacing, attractor x and y. Rule: radius = distance remapped into 0.1 to 0.5 m. Principle: an attractor-driven perforation pattern. Evaluation: keep every radius at least 0.1 m. Build it.",
+  "canvas": "hermetic",
+  "expected": {
+    "terminalStatus": "Idle",
+    "decompositionComplete": true,
+    "canvasHasComponent": [
+      {
+        "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+        "min": 1
+      },
+      {
+        "anyOf": [
+          "807b86e3-be8d-4970-92b5-f8cdcb45b06b",
+          "d114323a-e6ee-4164-946b-e4ca0ce15efa"
+        ],
+        "min": 1
+      },
+      {
+        "componentGuid": "93b8e93d-f932-402c-b435-84be04d87666",
+        "min": 1
+      }
+    ]
+  }
+}

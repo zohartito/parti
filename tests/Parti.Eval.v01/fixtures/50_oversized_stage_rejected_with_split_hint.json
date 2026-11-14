@@ -1,0 +1,425 @@
+{
+  "id": "50_oversized_stage_rejected_with_split_hint",
+  "description": "A response with 17 changes exceeds the per-response limit (16): it is rejected whole, nothing runs, and the rejection tells the model to build in stages. The model splits it into 16 + 1.",
+  "userPrompt": "Seventeen storeys, one height slider each (2.8 to 4.2 m); keep the total at or under 70 m.",
+  "canvas": "hermetic",
+  "providerScript": [
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "tool_call",
+          "toolName": "parti_record_decomposition",
+          "input": {
+            "inputs": [
+              {
+                "name": "storey height",
+                "domain": "2.8..4.2",
+                "unit": "m",
+                "source": "user_stated"
+              }
+            ],
+            "rules": [
+              {
+                "statement": "one height input per storey, 17 storeys",
+                "source": "user_stated"
+              }
+            ],
+            "principle": "independent storey heights read side by side",
+            "evaluations": [
+              {
+                "metric": "total building height",
+                "direction": "KEEP",
+                "target": 40,
+                "source": "user_stated"
+              }
+            ]
+          },
+          "toolId": "toolu_rec"
+        }
+      ]
+    },
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 0,
+            "y": 0
+          },
+          "toolId": "toolu_x1"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 60,
+            "y": 0
+          },
+          "toolId": "toolu_x2"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 120,
+            "y": 0
+          },
+          "toolId": "toolu_x3"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 180,
+            "y": 0
+          },
+          "toolId": "toolu_x4"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 240,
+            "y": 0
+          },
+          "toolId": "toolu_x5"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 300,
+            "y": 0
+          },
+          "toolId": "toolu_x6"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 0,
+            "y": 250
+          },
+          "toolId": "toolu_x7"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 60,
+            "y": 250
+          },
+          "toolId": "toolu_x8"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 120,
+            "y": 250
+          },
+          "toolId": "toolu_x9"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 180,
+            "y": 250
+          },
+          "toolId": "toolu_x10"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 240,
+            "y": 250
+          },
+          "toolId": "toolu_x11"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 300,
+            "y": 250
+          },
+          "toolId": "toolu_x12"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 0,
+            "y": 500
+          },
+          "toolId": "toolu_x13"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 60,
+            "y": 500
+          },
+          "toolId": "toolu_x14"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 120,
+            "y": 500
+          },
+          "toolId": "toolu_x15"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 180,
+            "y": 500
+          },
+          "toolId": "toolu_x16"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 240,
+            "y": 500
+          },
+          "toolId": "toolu_x17"
+        }
+      ]
+    },
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 0,
+            "y": 0
+          },
+          "toolId": "toolu_s1"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 60,
+            "y": 0
+          },
+          "toolId": "toolu_s2"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 120,
+            "y": 0
+          },
+          "toolId": "toolu_s3"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 180,
+            "y": 0
+          },
+          "toolId": "toolu_s4"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 240,
+            "y": 0
+          },
+          "toolId": "toolu_s5"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 300,
+            "y": 0
+          },
+          "toolId": "toolu_s6"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 0,
+            "y": 250
+          },
+          "toolId": "toolu_s7"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 60,
+            "y": 250
+          },
+          "toolId": "toolu_s8"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 120,
+            "y": 250
+          },
+          "toolId": "toolu_s9"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 180,
+            "y": 250
+          },
+          "toolId": "toolu_s10"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 240,
+            "y": 250
+          },
+          "toolId": "toolu_s11"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 300,
+            "y": 250
+          },
+          "toolId": "toolu_s12"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 0,
+            "y": 500
+          },
+          "toolId": "toolu_s13"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 60,
+            "y": 500
+          },
+          "toolId": "toolu_s14"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 120,
+            "y": 500
+          },
+          "toolId": "toolu_s15"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 180,
+            "y": 500
+          },
+          "toolId": "toolu_s16"
+        }
+      ]
+    },
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 400,
+            "y": 0
+          },
+          "toolId": "toolu_t1"
+        }
+      ]
+    },
+    {
+      "stopReason": "end_turn",
+      "interactions": [
+        {
+          "kind": "text",
+          "text": "Added all seventeen storey sliders in two stages."
+        }
+      ]
+    }
+  ],
+  "expected": {
+    "terminalStatus": "Idle",
+    "finalStopReason": "end_turn",
+    "toolCallCount": 17,
+    "providerCallCount": 5,
+    "planReviewCount": 2,
+    "gateRejections": 0,
+    "rejectionMessagesContain": [
+      "stages of at most 16 changes"
+    ],
+    "canvasHasComponent": [
+      {
+        "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+        "min": 17,
+        "max": 17
+      }
+    ]
+  }
+}

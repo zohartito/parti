@@ -1,0 +1,60 @@
+{
+  "id": "40_gate_blocks_write_without_decomposition",
+  "description": "A write with no recorded decomposition is rejected by the three-pillar gate before review; the model then pauses with ask_user.",
+  "userPrompt": "add a slider",
+  "canvas": "hermetic",
+  "providerScript": [
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 0,
+            "y": 0
+          },
+          "toolId": "toolu_add_nogate"
+        }
+      ]
+    },
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "text",
+          "text": "Before I add anything: what should the slider drive?"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "ask_user",
+          "input": {
+            "questions": [
+              {
+                "id": "intent",
+                "prompt": "What should the slider control, and over what range?",
+                "kind": "text"
+              }
+            ]
+          },
+          "toolId": "toolu_ask_intent"
+        }
+      ]
+    }
+  ],
+  "expected": {
+    "terminalStatus": "Paused",
+    "gateRejections": 1,
+    "planReviewCount": 0,
+    "toolCallCount": 0,
+    "canvasUnchanged": true,
+    "pausedWith": [
+      "intent"
+    ],
+    "decompositionComplete": false,
+    "rejectionMessagesContain": [
+      "three-pillar gate"
+    ]
+  }
+}

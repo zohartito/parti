@@ -1,0 +1,40 @@
+{
+  "id": "09_unknown_tool",
+  "description": "Model calls a tool name that is not registered. The dispatcher returns an unknown-tool error and the model recovers in text.",
+  "userPrompt": "please do the thing",
+  "expectUnknownTool": true,
+  "providerScript": [
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "tool_call",
+          "toolName": "gh_imaginary_tool",
+          "input": {
+            "foo": "bar"
+          },
+          "toolId": "toolu_imag_1"
+        }
+      ]
+    },
+    {
+      "stopReason": "end_turn",
+      "interactions": [
+        {
+          "kind": "text",
+          "text": "Sorry, that tool is not available. Tell me what you'd like to build and I'll use the standard tools."
+        }
+      ]
+    }
+  ],
+  "expected": {
+    "terminalStatus": "Idle",
+    "finalStopReason": "end_turn",
+    "finalStatus": "Finished",
+    "minInteractions": 4,
+    "textContains": "not available",
+    "toolCallCount": 1,
+    "providerCallCount": 2,
+    "planReviewCount": 0
+  }
+}

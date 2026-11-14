@@ -1,0 +1,126 @@
+{
+  "id": "43_locked_target_rejected",
+  "description": "A user-locked slider: gh_set_input on it is rejected at freeze (policy); deleting the panel it feeds is refused at dispatch (wired to a locked component). Canvas unchanged.",
+  "userPrompt": "Set the radius slider to 0.8, and if that is not possible delete the panel it feeds.",
+  "canvas": "hermetic",
+  "canvasSeed": {
+    "components": [
+      {
+        "instanceGuid": "5eed0000-0000-4000-8000-000000000001",
+        "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+        "x": 0,
+        "y": 0
+      },
+      {
+        "instanceGuid": "5eed0000-0000-4000-8000-000000000002",
+        "componentGuid": "59e0b89a-e487-49f8-bab8-b5bab16be14c",
+        "x": 250,
+        "y": 0
+      }
+    ],
+    "wires": [
+      {
+        "from": "5eed0000-0000-4000-8000-000000000001",
+        "to": "5eed0000-0000-4000-8000-000000000002"
+      }
+    ],
+    "locked": [
+      "5eed0000-0000-4000-8000-000000000001"
+    ]
+  },
+  "providerScript": [
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "text",
+          "text": "Recording the brief first."
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "parti_record_decomposition",
+          "input": {
+            "inputs": [
+              {
+                "name": "radius",
+                "domain": "0..1",
+                "unit": "m",
+                "source": "user_stated"
+              }
+            ],
+            "rules": [
+              {
+                "statement": "circle centred on the world origin in the XY plane",
+                "source": "user_stated"
+              }
+            ],
+            "principle": "one-parameter circular footprint",
+            "evaluations": [
+              {
+                "metric": "footprint area",
+                "direction": "KEEP",
+                "target": 50,
+                "source": "assumed"
+              }
+            ]
+          },
+          "toolId": "toolu_rec"
+        }
+      ]
+    },
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "tool_call",
+          "toolName": "gh_set_input",
+          "input": {
+            "target": "5eed0000-0000-4000-8000-000000000001",
+            "value": 0.8
+          },
+          "toolId": "toolu_set_locked"
+        }
+      ]
+    },
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "tool_call",
+          "toolName": "gh_delete",
+          "input": {
+            "target": "5eed0000-0000-4000-8000-000000000002"
+          },
+          "toolId": "toolu_del_wired"
+        }
+      ]
+    },
+    {
+      "stopReason": "end_turn",
+      "interactions": [
+        {
+          "kind": "text",
+          "text": "The radius slider is locked, so I could not change it or delete the panel wired to it. Unlock it from the chat window if you want the edit."
+        }
+      ]
+    }
+  ],
+  "expected": {
+    "terminalStatus": "Idle",
+    "finalStopReason": "end_turn",
+    "lockRejections": 2,
+    "planReviewCount": 1,
+    "toolCallCount": 1,
+    "canvasUnchanged": true,
+    "lockedComponents": [
+      "5eed0000-0000-4000-8000-000000000001"
+    ],
+    "rejectionMessagesContain": [
+      "is locked by the user",
+      "wired to a locked component"
+    ],
+    "finalTextContainsAny": [
+      "locked"
+    ]
+  }
+}

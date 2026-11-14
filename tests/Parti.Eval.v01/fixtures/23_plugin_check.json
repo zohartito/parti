@@ -1,0 +1,51 @@
+{
+  "id": "23_plugin_check",
+  "description": "Plugin preflight over the host catalog: Weaverbird is not loaded, so the model offers a vanilla fallback and writes nothing.",
+  "userPrompt": "Smooth my mesh with Weaverbird Catmull-Clark subdivision",
+  "providerScript": [
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "text",
+          "text": "Checking which plugins are loaded first."
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_plugin_check",
+          "input": {
+            "filter": "weaverbird"
+          },
+          "toolId": "toolu_plug_1"
+        }
+      ]
+    },
+    {
+      "stopReason": "end_turn",
+      "interactions": [
+        {
+          "kind": "text",
+          "text": "Weaverbird is not installed in this Rhino, so I can build a vanilla fallback instead. Should I proceed?"
+        }
+      ]
+    }
+  ],
+  "expected": {
+    "terminalStatus": "Idle",
+    "finalStopReason": "end_turn",
+    "finalStatus": "Finished",
+    "toolCallCount": 1,
+    "providerCallCount": 2,
+    "toolCallsMinCount": {
+      "gh_plugin_check": 1
+    },
+    "toolCallsMaxCount": {
+      "gh_add_component": 0
+    },
+    "finalTextContainsAny": [
+      "not installed",
+      "fallback"
+    ],
+    "planReviewCount": 0
+  }
+}

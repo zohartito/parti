@@ -1,0 +1,307 @@
+{
+  "id": "49_staged_build_adds_then_wires",
+  "description": "Build in steps: twelve adds in one response (one plan review), the six wires in the next (using the instance GUIDs the adds returned), then a read-back. Twelve changes in one response were rejected under the old limit of 8.",
+  "userPrompt": "Six storeys. Give me a height slider for each storey (2.8 to 4.2 m) and a panel showing each value. The total should stay at or under 40 m.",
+  "canvas": "hermetic",
+  "providerScript": [
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "tool_call",
+          "toolName": "parti_record_decomposition",
+          "input": {
+            "inputs": [
+              {
+                "name": "storey height",
+                "domain": "2.8..4.2",
+                "unit": "m",
+                "source": "user_stated"
+              }
+            ],
+            "rules": [
+              {
+                "statement": "one height input per storey, 6 storeys",
+                "source": "user_stated"
+              }
+            ],
+            "principle": "independent storey heights read side by side",
+            "evaluations": [
+              {
+                "metric": "total building height",
+                "direction": "KEEP",
+                "target": 40,
+                "source": "user_stated"
+              }
+            ]
+          },
+          "toolId": "toolu_rec"
+        }
+      ]
+    },
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 0,
+            "y": 0
+          },
+          "toolId": "toolu_a1"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 60,
+            "y": 0
+          },
+          "toolId": "toolu_a2"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 120,
+            "y": 0
+          },
+          "toolId": "toolu_a3"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 180,
+            "y": 0
+          },
+          "toolId": "toolu_a4"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 240,
+            "y": 0
+          },
+          "toolId": "toolu_a5"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 300,
+            "y": 0
+          },
+          "toolId": "toolu_a6"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "59e0b89a-e487-49f8-bab8-b5bab16be14c",
+            "x": 0,
+            "y": 250
+          },
+          "toolId": "toolu_a7"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "59e0b89a-e487-49f8-bab8-b5bab16be14c",
+            "x": 60,
+            "y": 250
+          },
+          "toolId": "toolu_a8"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "59e0b89a-e487-49f8-bab8-b5bab16be14c",
+            "x": 120,
+            "y": 250
+          },
+          "toolId": "toolu_a9"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "59e0b89a-e487-49f8-bab8-b5bab16be14c",
+            "x": 180,
+            "y": 250
+          },
+          "toolId": "toolu_a10"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "59e0b89a-e487-49f8-bab8-b5bab16be14c",
+            "x": 240,
+            "y": 250
+          },
+          "toolId": "toolu_a11"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "59e0b89a-e487-49f8-bab8-b5bab16be14c",
+            "x": 300,
+            "y": 250
+          },
+          "toolId": "toolu_a12"
+        }
+      ]
+    },
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "tool_call",
+          "toolName": "gh_connect",
+          "input": {
+            "from": "c0000000-0000-4000-8000-000000000001",
+            "fromOutput": 0,
+            "to": "c0000000-0000-4000-8000-000000000007",
+            "toInput": 0
+          },
+          "toolId": "toolu_w1"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_connect",
+          "input": {
+            "from": "c0000000-0000-4000-8000-000000000002",
+            "fromOutput": 0,
+            "to": "c0000000-0000-4000-8000-000000000008",
+            "toInput": 0
+          },
+          "toolId": "toolu_w2"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_connect",
+          "input": {
+            "from": "c0000000-0000-4000-8000-000000000003",
+            "fromOutput": 0,
+            "to": "c0000000-0000-4000-8000-000000000009",
+            "toInput": 0
+          },
+          "toolId": "toolu_w3"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_connect",
+          "input": {
+            "from": "c0000000-0000-4000-8000-000000000004",
+            "fromOutput": 0,
+            "to": "c0000000-0000-4000-8000-000000000010",
+            "toInput": 0
+          },
+          "toolId": "toolu_w4"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_connect",
+          "input": {
+            "from": "c0000000-0000-4000-8000-000000000005",
+            "fromOutput": 0,
+            "to": "c0000000-0000-4000-8000-000000000011",
+            "toInput": 0
+          },
+          "toolId": "toolu_w5"
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "gh_connect",
+          "input": {
+            "from": "c0000000-0000-4000-8000-000000000006",
+            "fromOutput": 0,
+            "to": "c0000000-0000-4000-8000-000000000012",
+            "toInput": 0
+          },
+          "toolId": "toolu_w6"
+        }
+      ]
+    },
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "tool_call",
+          "toolName": "gh_get_all",
+          "input": {},
+          "toolId": "toolu_read"
+        }
+      ]
+    },
+    {
+      "stopReason": "end_turn",
+      "interactions": [
+        {
+          "kind": "text",
+          "text": "Built six storey sliders, each wired into a panel; the read-back shows no errors."
+        }
+      ]
+    }
+  ],
+  "expected": {
+    "terminalStatus": "Idle",
+    "finalStopReason": "end_turn",
+    "toolCallCount": 19,
+    "providerCallCount": 5,
+    "planReviewCount": 2,
+    "gateRejections": 0,
+    "decompositionComplete": true,
+    "canvasHasComponent": [
+      {
+        "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+        "min": 6,
+        "max": 6
+      },
+      {
+        "componentGuid": "59e0b89a-e487-49f8-bab8-b5bab16be14c",
+        "min": 6,
+        "max": 6
+      }
+    ],
+    "canvasWireCount": 6,
+    "canvasHasWire": [
+      {
+        "from": "c0000000-0000-4000-8000-000000000001",
+        "to": "c0000000-0000-4000-8000-000000000007"
+      },
+      {
+        "from": "c0000000-0000-4000-8000-000000000002",
+        "to": "c0000000-0000-4000-8000-000000000008"
+      },
+      {
+        "from": "c0000000-0000-4000-8000-000000000003",
+        "to": "c0000000-0000-4000-8000-000000000009"
+      },
+      {
+        "from": "c0000000-0000-4000-8000-000000000004",
+        "to": "c0000000-0000-4000-8000-000000000010"
+      },
+      {
+        "from": "c0000000-0000-4000-8000-000000000005",
+        "to": "c0000000-0000-4000-8000-000000000011"
+      },
+      {
+        "from": "c0000000-0000-4000-8000-000000000006",
+        "to": "c0000000-0000-4000-8000-000000000012"
+      }
+    ]
+  }
+}

@@ -1,0 +1,216 @@
+{
+  "id": "10_long_conversation",
+  "description": "Decomposition plus four tool passes (three reviewed adds and a snapshot) inside the budget, then a summary.",
+  "userPrompt": "Build a small definition: two sliders (radius 1 to 10 m, offset 0 to 2 m) and a panel; keep the area under 50 m2.",
+  "sessionOptions": {
+    "maxTurns": 10,
+    "maxToolPasses": 6
+  },
+  "providerScript": [
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "text",
+          "text": "Recording the brief first."
+        },
+        {
+          "kind": "tool_call",
+          "toolName": "parti_record_decomposition",
+          "input": {
+            "inputs": [
+              {
+                "name": "radius",
+                "domain": "1..10",
+                "unit": "m",
+                "source": "user_stated"
+              },
+              {
+                "name": "offset",
+                "domain": "0..2",
+                "unit": "m",
+                "source": "user_stated"
+              }
+            ],
+            "rules": [
+              {
+                "statement": "circle centred on the world origin in the XY plane",
+                "source": "user_stated"
+              }
+            ],
+            "principle": "one-parameter circular footprint",
+            "evaluations": [
+              {
+                "metric": "footprint area",
+                "direction": "KEEP",
+                "target": 50,
+                "source": "assumed"
+              }
+            ]
+          },
+          "toolId": "toolu_rec"
+        }
+      ]
+    },
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 50,
+            "y": 50
+          },
+          "toolId": "toolu_s1"
+        }
+      ]
+    },
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "x": 50,
+            "y": 150
+          },
+          "toolId": "toolu_s2"
+        }
+      ]
+    },
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "tool_call",
+          "toolName": "gh_add_component",
+          "input": {
+            "componentGuid": "59e0b89a-e487-49f8-bab8-b5bab16be14c",
+            "x": 300,
+            "y": 100
+          },
+          "toolId": "toolu_panel"
+        }
+      ]
+    },
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        {
+          "kind": "tool_call",
+          "toolName": "gh_get_all",
+          "input": {},
+          "toolId": "toolu_snap"
+        }
+      ]
+    },
+    {
+      "stopReason": "end_turn",
+      "interactions": [
+        {
+          "kind": "text",
+          "text": "Done. The canvas now has 3 components ready for wiring."
+        }
+      ]
+    }
+  ],
+  "toolHandlers": {
+    "gh_add_component": {
+      "sequence": [
+        {
+          "status": "success",
+          "instanceGuid": "3f2a9c10-0000-4000-8000-000000000031",
+          "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+          "canonicalName": "Number Slider",
+          "nickname": "",
+          "pivot": {
+            "x": 50,
+            "y": 50
+          }
+        },
+        {
+          "status": "success",
+          "instanceGuid": "3f2a9c10-0000-4000-8000-000000000032",
+          "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+          "canonicalName": "Number Slider",
+          "nickname": "",
+          "pivot": {
+            "x": 50,
+            "y": 150
+          }
+        },
+        {
+          "status": "success",
+          "instanceGuid": "3f2a9c10-0000-4000-8000-000000000033",
+          "componentGuid": "59e0b89a-e487-49f8-bab8-b5bab16be14c",
+          "canonicalName": "Panel",
+          "nickname": "",
+          "pivot": {
+            "x": 300,
+            "y": 100
+          }
+        }
+      ]
+    },
+    "gh_get_all": {
+      "result": {
+        "status": "success",
+        "documentId": "canned-doc",
+        "count": 3,
+        "nodes": [
+          {
+            "id": "3f2a9c10-0000-4000-8000-000000000031",
+            "iid": "3f2a9c10-0000-4000-8000-000000000031",
+            "documentId": "canned-doc",
+            "ref": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "n": "Number Slider",
+            "pos": [
+              0,
+              0
+            ]
+          },
+          {
+            "id": "3f2a9c10-0000-4000-8000-000000000032",
+            "iid": "3f2a9c10-0000-4000-8000-000000000032",
+            "documentId": "canned-doc",
+            "ref": "57da07bd-ecab-415d-9d86-af36d7073abc",
+            "n": "Number Slider",
+            "pos": [
+              0,
+              0
+            ]
+          },
+          {
+            "id": "3f2a9c10-0000-4000-8000-000000000033",
+            "iid": "3f2a9c10-0000-4000-8000-000000000033",
+            "documentId": "canned-doc",
+            "ref": "59e0b89a-e487-49f8-bab8-b5bab16be14c",
+            "n": "Panel",
+            "pos": [
+              0,
+              0
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "expected": {
+    "terminalStatus": "Idle",
+    "finalStopReason": "end_turn",
+    "finalStatus": "Finished",
+    "minInteractions": 12,
+    "textContains": "3 components",
+    "toolCallCount": 4,
+    "providerCallCount": 6,
+    "planReviewCount": 3,
+    "decompositionInputsInclude": [
+      "radius",
+      "offset"
+    ]
+  }
+}

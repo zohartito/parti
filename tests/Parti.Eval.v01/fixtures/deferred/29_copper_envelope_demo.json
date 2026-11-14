@@ -1,0 +1,75 @@
+{
+  "id": "29_copper_envelope_demo",
+  "description": "v0.8 Module 3 copper-envelope demo: user asks for a copper facade whose panel depth (80-300mm) is optimized to maximize morning light on the south elevation. The assistant calls gh_plugin_check to confirm Galapagos + Ladybug are present, then gh_galapagos_setup with the panel_depth genome wired to a morning-light fitness clause, then ends the turn with a design-intent summary. Serves as the end-to-end eval for the v0.8 copper-envelope exit criterion.",
+  "userPrompt": "I need a copper facade with variable panel depth 80-300mm that maximizes morning light on the south elevation. Set it up.",
+  "providerScript": [
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        { "kind": "text", "text": "Confirming Galapagos and Ladybug are both installed before I stage the setup." },
+        {
+          "kind": "tool_call",
+          "toolId": "toolu_check_copper_1",
+          "toolName": "gh_plugin_check",
+          "input": { "names": ["galapagos", "ladybug"] }
+        }
+      ]
+    },
+    {
+      "stopReason": "tool_use",
+      "interactions": [
+        { "kind": "text", "text": "Both plugins are available. Staging the panel depth genome (80-300mm) against a morning-light fitness clause on the south elevation." },
+        {
+          "kind": "tool_call",
+          "toolId": "toolu_copper_setup_1",
+          "toolName": "gh_galapagos_setup",
+          "input": {
+            "genomes": [
+              { "slider_name": "panel_depth", "min": 80, "max": 300 }
+            ],
+            "fitness": { "metric": "morning_light_south", "direction": "Maximize" }
+          }
+        }
+      ]
+    },
+    {
+      "stopReason": "end_turn",
+      "interactions": [
+        { "kind": "text", "text": "Copper envelope is staged. The panel depth slider (80-300mm) is now the genome, and the fitness maximizes morning light on the south elevation. Open the Galapagos Editor and press Start when you're ready to search the design space." }
+      ]
+    }
+  ],
+  "toolHandlers": {
+    "gh_plugin_check": {
+      "result": {
+        "status": "ok",
+        "plugins": [
+          { "name": "Galapagos", "version": "1.0", "kind": "Gha" },
+          { "name": "Ladybug", "version": "1.6.0", "kind": "Gha" }
+        ]
+      }
+    },
+    "gh_galapagos_setup": {
+      "result": {
+        "status": "pending_rhino",
+        "message": "Setup validated",
+        "validated": { "genome_count": 1, "fitness_metric": "morning_light_south" }
+      }
+    }
+  },
+  "expected": {
+    "finalStopReason": "end_turn",
+    "finalStatus": "Finished",
+    "toolCallCount": 2,
+    "providerCallCount": 3,
+    "toolCallsMinCount": {
+      "gh_galapagos_setup": 1,
+      "gh_plugin_check": 1
+    },
+    "toolCallsMaxCount": {
+      "gh_octopus_setup": 0,
+      "gh_galapagos_run": 0
+    },
+    "finalTextContainsAny": ["copper", "panel depth", "morning light"]
+  }
+}

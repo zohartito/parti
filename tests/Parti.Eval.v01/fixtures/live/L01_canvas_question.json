@@ -1,0 +1,51 @@
+{
+  "id": "L01_canvas_question",
+  "description": "R1: a question about the canvas is answered from gh_get_all; nothing is written and nothing is reviewed.",
+  "userPrompt": "What's on my canvas right now?",
+  "canvas": "hermetic",
+  "canvasSeed": {
+    "components": [
+      {
+        "instanceGuid": "5eed0000-0000-4000-8000-000000000001",
+        "componentGuid": "57da07bd-ecab-415d-9d86-af36d7073abc",
+        "nickname": "radius",
+        "x": 0,
+        "y": 0,
+        "value": 5,
+        "min": 1,
+        "max": 10
+      },
+      {
+        "instanceGuid": "5eed0000-0000-4000-8000-000000000002",
+        "componentGuid": "807b86e3-be8d-4970-92b5-f8cdcb45b06b",
+        "x": 250,
+        "y": 0
+      },
+      {
+        "instanceGuid": "5eed0000-0000-4000-8000-000000000003",
+        "componentGuid": "59e0b89a-e487-49f8-bab8-b5bab16be14c",
+        "x": 250,
+        "y": 150
+      }
+    ],
+    "wires": [
+      {
+        "from": "5eed0000-0000-4000-8000-000000000001",
+        "to": "5eed0000-0000-4000-8000-000000000002",
+        "toInput": "Radius"
+      }
+    ]
+  },
+  "expected": {
+    "terminalStatus": "Idle",
+    "toolCallsInclude": [
+      "gh_get_all"
+    ],
+    "planReviewCount": 0,
+    "canvasUnchanged": true,
+    "finalTextContainsAny": [
+      "slider",
+      "circle"
+    ]
+  }
+}
