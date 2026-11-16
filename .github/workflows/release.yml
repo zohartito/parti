@@ -28,7 +28,7 @@ jobs:
           dotnet-version: 7.0.x
 
       - name: Restore
-        run: dotnet restore Parti.sln
+        run: dotnet restore Parti.sln --locked-mode
 
       - name: Build Parti.Components (Release)
         run: dotnet build src/Parti.Components/Parti.Components.csproj --configuration Release --no-restore --nologo --verbosity minimal

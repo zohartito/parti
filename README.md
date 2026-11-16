@@ -70,6 +70,12 @@ dotnet test Parti.sln -c Release
 With only a newer .NET installed, prefix both commands with `DOTNET_ROLL_FORWARD=Major`. The plugin is built to
 `src/Parti.Components/bin/Release/net7.0/Parti.gha`.
 
+NuGet restores use the committed `packages.lock.json` files in locked mode by
+default. For an intentional dependency update, run
+`dotnet restore Parti.sln -p:RestoreLockedMode=false --force-evaluate`, review the
+lock diffs, then verify `dotnet restore Parti.sln --locked-mode`. Python companion
+installation uses its [hashed lock procedure](mcp/parti_mcp/README.md#reproducible-development-install).
+
 To make an installable package:
 
 ```bash
