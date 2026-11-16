@@ -18,7 +18,8 @@ What works today:
   OpenAI, OpenRouter, any OpenAI-compatible server, or your own Claude or ChatGPT subscription through the official
   `claude` / `codex` CLI.
 - **Design logic first.** Before any canvas write, the model must record a decomposition: inputs, rules, and
-  evaluations. At least one item must come from you. This rule is enforced in code, not only in the prompt.
+  evaluations. Code requires at least one item labelled `user_stated` by the model; it does not verify
+  that the item actually came from your message. You still approve each proposed write.
 - **You approve every write.** Each batch of edits opens a plan dialog that lists every call, the real Grasshopper
   component names, and the reason taken from the decomposition. Nothing is written until you click Approve.
 - **Canvas tools.** The model can find components by name, read the canvas (including runtime warnings), and add,
