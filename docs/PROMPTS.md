@@ -1,6 +1,6 @@
 # Parti System Prompt Governance
 
-*Last updated 2026-09-27. Applies from v0.8.5 onward. For v0.6 through v0.8.4 history, see `system_v0.6.md` and the v0.6 revision of this document in git history.*
+*Last updated 2026-09-27. Applies from v0.8.5 onward. The old monolithic prompt and internal pre-publication revisions are not included in this public checkout.*
 
 ---
 
@@ -24,7 +24,7 @@ Through v0.8.4 the system prompt was a single monolithic Markdown file at `promp
 
 Starting in v0.8.5 the prompt is split into a three-layer skill bundle under `prompts/parti-foundations/`. Layer 0 is included on every entry call. Layer 1 is selected per message; Layer 2 has a loader API but is not wired into the product chat.
 
-The old monolithic prompt was moved to `prompts/deprecated/system_v0.6.md` in v0.8.5 and removed in the 2026-09-27 product-wiring wave. It survives only in git history.
+The old monolithic prompt was moved to `prompts/deprecated/system_v0.6.md` in v0.8.5 and removed in the 2026-09-27 product-wiring wave. It is not included in the public checkout.
 
 ---
 
@@ -70,33 +70,29 @@ Paths:
 
 ## Directory layout
 
+Current prompt files (each Layer 1 directory also includes `eval_set.json`):
+
 ```
 prompts/
-  README.md                        Filename conventions and PR rules.
+  README.md
   parti-foundations/
-    SKILL.md                       Layer 0. Always in context.
+    SKILL.md                       Layer 0.
     parti-ghcanvas/
-      SKILL.md                     Layer 1. Loaded when router matches.
-      references/
-        tree-hygiene.md            Layer 2. Loaded on demand.
-        id-conventions.md          Layer 2.
-      templates/
-        range.json                 Layer 2. On-demand JSON skeleton.
-        slider.json                Layer 2.
+      SKILL.md                     Layer 1.
+      references/                  Layer 2 files; not retrieved by the product.
+        grasshopper-primitives.md
+        tree-ops-decision-table.md
+        plugin-intent-router.md
     parti-formalize/
       SKILL.md
-      references/
-        ...
+      templates/
+        decomposition.json
     parti-abstract/
       SKILL.md
     parti-feedback/
       SKILL.md
     parti-optimize/
       SKILL.md
-      references/
-        galapagos-config.md
-      templates/
-        galapagos-default.json
     parti-fabricate/
       SKILL.md
 ```
@@ -109,7 +105,7 @@ Sub-skill directory names start with `parti-` by convention. The directory name 
 
 ### SkillLoader
 
-`Parti.Core.Prompts.SkillLoader` resolves a skill path (for example `parti-ghcanvas/SKILL.md` or `parti-optimize/templates/galapagos-default.json`) to the file's text content.
+`Parti.Core.Prompts.SkillLoader` resolves a skill path (for example `parti-ghcanvas/SKILL.md` or `parti-formalize/templates/decomposition.json`) to the file's text content.
 
 At build time, the `Parti.Components` csproj embeds every file under `prompts/parti-foundations/` as a .NET embedded resource. The `LogicalName` uses this convention:
 
@@ -123,8 +119,8 @@ Worked examples:
 |---|---|
 | `prompts/parti-foundations/SKILL.md` | `Parti.Prompts.parti-foundations/SKILL.md` |
 | `prompts/parti-foundations/parti-ghcanvas/SKILL.md` | `Parti.Prompts.parti-foundations/parti-ghcanvas/SKILL.md` |
-| `prompts/parti-foundations/parti-ghcanvas/references/tree-hygiene.md` | `Parti.Prompts.parti-foundations/parti-ghcanvas/references/tree-hygiene.md` |
-| `prompts/parti-foundations/parti-optimize/templates/galapagos-default.json` | `Parti.Prompts.parti-foundations/parti-optimize/templates/galapagos-default.json` |
+| `prompts/parti-foundations/parti-ghcanvas/references/tree-ops-decision-table.md` | `Parti.Prompts.parti-foundations/parti-ghcanvas/references/tree-ops-decision-table.md` |
+| `prompts/parti-foundations/parti-formalize/templates/decomposition.json` | `Parti.Prompts.parti-foundations/parti-formalize/templates/decomposition.json` |
 
 `SkillLoader` reads the resource stream and returns the text. It also parses and strips any YAML frontmatter between `---` fences before handing the content to the model.
 
@@ -225,7 +221,7 @@ The rules:
 - **Drop of 5% to 10%** requires maintainer discussion in the PR. Usually held.
 - **Drop greater than 10%** requires explicit maintainer sign-off with rationale written into the PR body.
 
-The eval suite lives at `tests/Parti.Core.Evals/` and runs in CI. For the exact fixture format and scoring methodology, see [EVAL-v0.1.md](EVAL-v0.1.md).
+The eval suite lives at `tests/Parti.Eval.v01/` and runs in CI. For the exact fixture format and scoring methodology, see [EVAL-v0.1.md](EVAL-v0.1.md).
 
 New sub-skills should ship with at least three fixture tests that trigger the router to load them. A sub-skill with no fixtures is a PR blocker.
 
@@ -253,7 +249,7 @@ Through v0.8.4, the canonical prompt was `prompts/system_v0.6.md`, a single file
 
 In v0.8.5 it was moved to `prompts/deprecated/system_v0.6.md` with a deprecation header prepended and kept as an embedded resource for one release cycle.
 
-It was removed on 2026-09-27, together with its embedded resource and `SystemPromptLoader`. The product reads only the 3-layer bundle. The old file is available in git history.
+It was removed on 2026-09-27, together with its embedded resource and `SystemPromptLoader`. The product reads only the 3-layer bundle. The old file is not included in this public checkout.
 
 ---
 
