@@ -13,8 +13,8 @@ namespace Parti.Mcp;
 /// <summary>
 /// Standalone entry point for the Parti MCP companion server. Mirrors parti-cli's --live
 /// pattern: default mode uses a stub dispatcher so the server can be exercised from Claude
-/// Desktop / mcp-inspector without a running Rhino. Pass --dispatcher live to opt into the
-/// real Grasshopper adapters (fails fast here — Parti.Mcp has no Rhino dependency in v0.5).
+/// Desktop / mcp-inspector without a running Rhino. Live MCP is not implemented;
+/// --dispatcher live fails fast and the plugin has no in-process MCP server.
 /// </summary>
 internal static class Program
 {
@@ -56,7 +56,7 @@ internal static class Program
         IToolDispatcher dispatcher;
         if (string.Equals(dispatcherKind, "live", StringComparison.OrdinalIgnoreCase))
         {
-            Console.Error.WriteLine("error: --dispatcher live requires Rhino/Grasshopper and is unavailable in the standalone companion. Use the Parti plugin's in-process MCP server for a live canvas.");
+            Console.Error.WriteLine("error: live MCP is not implemented. Use --dispatcher stub for canned responses without a canvas.");
             return 1;
         }
 
@@ -88,7 +88,7 @@ internal static class Program
         Console.Error.WriteLine();
         Console.Error.WriteLine("  --port        Reserved for HTTP transport (v0.6+). Ignored for stdio.");
         Console.Error.WriteLine("  --dispatcher  'stub' (default) returns canned success payloads.");
-        Console.Error.WriteLine("                'live' requires the in-process Rhino plugin; not available here.");
+        Console.Error.WriteLine("                'live' is not implemented.");
     }
 
     /// <summary>
