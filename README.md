@@ -14,9 +14,10 @@ your definitions often.
 
 What works today:
 
-- **Chat inside Grasshopper.** The Parti Chat component opens a chat window. Providers: Ollama (the default), Anthropic,
+- **Chat inside Grasshopper.** The Parti Chat component opens a chat window. Providers: Ollama, Anthropic,
   OpenAI, OpenRouter, any OpenAI-compatible server, or your own Claude or ChatGPT subscription through the official
-  `claude` / `codex` CLI.
+  `claude` / `codex` CLI. On startup, an installed `claude` executable is selected first (login is not
+  checked); otherwise the window looks for a local Ollama model. Settings lets you choose another provider.
 - **Design logic first.** Before any canvas write, the model must record a decomposition: inputs, rules, and
   evaluations. Code requires at least one item labelled `user_stated` by the model; it does not verify
   that the item actually came from your message. You still approve each proposed write.
