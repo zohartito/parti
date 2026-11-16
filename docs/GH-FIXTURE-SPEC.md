@@ -1,9 +1,9 @@
-# GH Fixture Spec (Eval v0.2)
+# GH Fixture Spec (planned scaffold)
 
 ## Purpose
 
 This spec defines the on-disk shape of a **.gh fixture** — the unit of evaluation
-used by Parti's v0.7 eval harness. A .gh fixture is a triple: a real Grasshopper
+proposed for a future live-canvas harness. No live `.gh` runner or CI schema-validation job exists in this repository. A .gh fixture is a triple: a real Grasshopper
 definition captured in a known state, the expected Grasshopper definition after
 Parti handles a user prompt, and a JSON sidecar describing the prompt and the
 checks that should pass. We found no other Grasshopper AI plugin that publishes
@@ -63,7 +63,7 @@ Field reference:
   of calls per tool; use `minCalls == maxCalls` for exact counts. Omit tools you
   don't care about.
 - `canvasAssertions` — array of predicate strings evaluated against `after.gh`.
-  The supported predicate forms as of v0.7:
+  The proposed predicate forms (not implemented by a runner):
   - `componentExists: <Type> named '<name>'` — component of the given type whose
     nickname or name matches.
   - `componentExists: <Type>` — any one component of the given type.
@@ -98,13 +98,13 @@ Field reference:
 8. Verify: `before.gh` and `after.gh` both open in Rhino 8, `fixture.json`
    validates against `schema.json`, the fixture folder name equals `id`.
 
-## Definition of done (per fixture)
+## Proposed definition of done (per fixture)
 
 A fixture is done when all of:
 
 - `before.gh` opens in Rhino 8 without "missing component" warnings.
 - `after.gh` opens in Rhino 8 without "missing component" warnings.
-- `fixture.json` validates against `schema.json` (CI enforces this).
+- `fixture.json` validates against `schema.json` (manual check; CI does not enforce this).
 - Every predicate in `canvasAssertions` is expressible in the predicate
   vocabulary listed above. If you need a new predicate form, add it to this
   spec first, then use it.
