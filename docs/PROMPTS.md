@@ -38,7 +38,7 @@ This is the only prompt file that ships with every request. It contains:
 
 - The identity line (who Parti is, who the users are).
 - The global safety rules and reply-style rules.
-- A short index of Layer 1 sub-skills with one-line triggers so the model knows when to ask the router to load one.
+- A short index of Layer 1 sub-skills for model guidance; the keyword router reads manifest tags separately.
 - The tool catalogue at headline level (names and one-line descriptions of each `gh_*` tool).
 
 Keep Layer 0 small. Target: under 3 KB of rendered Markdown after the loader strips the YAML frontmatter. Anything that applies only sometimes belongs in Layer 1, not here.
@@ -128,7 +128,7 @@ File-system fallback is optional. If the loader cannot find a resource and the r
 
 ### SkillRouter
 
-`Parti.Core.Prompts.SkillRouter` decides which Layer 1 sub-skills are active for a given turn.
+`Parti.Core.Prompts.KeywordSkillRouter` decides which Layer 1 sub-skills are active for a given message.
 
 The product uses `KeywordSkillRouter`, which discovers sub-skill manifests and matches their inline `tags` against the current message. The Layer 0 index is guidance for the model, not router configuration. `SessionPromptBuilder` combines Layer 0 with the selected Layer 1 bodies on each entry call; it does not accumulate skills across messages.
 
@@ -162,6 +162,7 @@ Help the user explain their example workflow before proposing canvas edits.
 ```
 
 The body is the guidance the model reads when the sub-skill is active. It is appended to Layer 0 in the same chat loop, so it must not tell the model to reply only in JSON or that its output is hidden from the user: replies are plain text and pillar results are stored with `parti_record_decomposition` (enforced by `ProductPrompt_RoutedSubSkillsHaveNoJsonOnlyDirective`).
+
 3. **Add references and templates if needed.** Under `references/` and `templates/` in the sub-skill directory. Markdown for references, JSON for templates. Keep them small and single-purpose. These files are not currently retrieved by the product chat.
 4. **Update Layer 0 triggers.** Add a one-line entry for `parti-example` to the Layer 1 sub-skill index in `prompts/parti-foundations/SKILL.md`. The entry documents the skill for the model; the router reads `tags` from the sub-skill manifest.
 5. **Verify the router sees it.** Run the router fixture tests under `tests/Parti.Core.Tests/Prompts/` with a message that should trigger the new sub-skill. Confirm `KeywordSkillRouter` selects `parti-example` and `SkillLoader` loads its body. `DocumentedSkillTests.AddingSubSkill_DocumentedManifestLoadsAndRoutes` exercises the example above with `FileSystemSkillSource` rooted at a folder containing `parti-foundations`.
