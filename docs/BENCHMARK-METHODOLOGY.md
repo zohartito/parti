@@ -160,7 +160,7 @@ Neither the report nor the logs contain secrets. Both are safe to attach to a PR
 **Step-by-step reproduction.** To reproduce the numbers in [EVAL-v0.1.md](EVAL-v0.1.md):
 
 1. Install the .NET 7 SDK. Confirm with `dotnet --version` returning a `7.0.x` string.
-2. Clone the repository and check out the commit whose numbers you want to reproduce. Every published pass rate names the commit.
+2. Clone the repository and check out the commit whose numbers you want to reproduce. The published live-result `gitSha` fields contain build labels rather than commit hashes, so those exact measured sources cannot be selected from this repository. Future publications should retain the source commit and per-run configuration, redacting hostnames separately.
 3. Restore packages: `dotnet restore`.
 4. Run the suite: `dotnet test tests/Parti.Eval.v01/Parti.Eval.v01.csproj`. The command returns exit code 0 when every fixture passes.
 5. Open `docs/EVAL-v0.1.md`. The table is overwritten by the last run; confirm the row counts, statuses, and tool-call counts match the published table.
