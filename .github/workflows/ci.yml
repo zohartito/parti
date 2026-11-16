@@ -28,12 +28,12 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v7
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       with:
         fetch-depth: 0
         persist-credentials: false
     - name: Run gitleaks
-      uses: gitleaks/gitleaks-action@v3
+      uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3
       env:
           # No GITLEAKS_LICENSE needed: gitleaks-action is free for personal
           # (non-organization) GitHub accounts.
@@ -45,12 +45,12 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v7
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       with:
         fetch-depth: 0
     - name: Setup .NET 7 SDK
-      uses: actions/setup-dotnet@v6
+      uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6
       with:
         dotnet-version: 7.0.x
 
@@ -74,7 +74,7 @@ jobs:
 
     - name: Upload TRX test results
       if: always()
-      uses: actions/upload-artifact@v7
+      uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
       with:
         name: test-results-trx
         path: ${{ runner.temp }}/TestResults/**/*.trx
@@ -82,7 +82,7 @@ jobs:
 
     - name: Upload Parti.gha artifact
       if: success()
-      uses: actions/upload-artifact@v7
+      uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
       with:
         name: parti-gha
         path: src/Parti.Components/bin/Release/net7.0/Parti.gha
