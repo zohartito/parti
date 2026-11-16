@@ -44,7 +44,7 @@ Example (`02_add_slider.json`):
     "finalStopReason": "end_turn",
     "finalStatus": "Finished",
     "toolCallCount": 1,
-    "textContains": "NumberSlider"
+    "textContains": "Number Slider"
   }
 }
 ```
@@ -99,7 +99,7 @@ Example (`22_ask_user_clarify.json`):
 ```jsonc
 {
   "expected": {
-    "terminalStatus": "Idle",
+    "terminalStatus": "Paused",
     "finalTextContainsAny": ["which", "clarify", "specify"]
   }
 }
