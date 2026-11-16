@@ -6,7 +6,7 @@ streaming, the three-pillar gate, the lock and catalog policies, strict declared
 error-repair cap of 5. The only differences from Rhino are the canvas (`HermeticCanvas` over the
 Rhino 8.35 catalog snapshot, instead of a live `GH_Document`) and the reviewer (approves every plan
 and records it). Each brief runs N times per model at temperature 0 with the chat window's output
-budget (8,192 tokens by default, `PARTI_LIVE_MAX_TOKENS`; the numbers below were measured at 4,096,
+budget (8,192 tokens by default, `PARTI_LIVE_MAX_TOKENS`; the current table below was measured at 8,192,
 see "What was measured"). A run passes only when every expectation in the brief holds, including its
 expected terminal status (A14). The runner writes raw results, with a compact transcript of every run, to
 `bench/results/<date>/<model>.json`. In the published result files, the hostname of the Ollama machine is replaced by `ollama-host` and the git commit of each run by a build name.
