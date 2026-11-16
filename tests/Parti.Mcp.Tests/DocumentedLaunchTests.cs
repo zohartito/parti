@@ -28,7 +28,7 @@ public class DocumentedLaunchTests
     [Fact]
     public async Task DocumentedClientEnvironment_StartsStubSubprocess()
     {
-        var readme = File.ReadAllText(Path.Combine(RepoRoot(), "src", "Parti.Mcp", "README.md"));
+        var readme = File.ReadAllText(Path.Combine(RepoRoot(), "src", "Parti.Mcp", "README.md")).Replace("\r\n", "\n"); // Windows checkouts use CRLF
         var config = Regex.Match(readme, "```(?:json)?\\n(\\{.*?\\})\\n```", RegexOptions.Singleline);
         var env = JObject.Parse(config.Groups[1].Value)["mcpServers"]!["parti"]!["env"] as JObject;
         // Explicitly ignore the test host's roll-forward setting: clients need their own.

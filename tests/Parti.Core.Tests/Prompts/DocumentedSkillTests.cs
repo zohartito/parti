@@ -21,7 +21,7 @@ public class DocumentedSkillTests
     [Fact]
     public void AddingSubSkill_DocumentedManifestLoadsAndRoutes()
     {
-        var doc = File.ReadAllText(Path.Combine(RepoRoot(), "docs", "PROMPTS.md"));
+        var doc = File.ReadAllText(Path.Combine(RepoRoot(), "docs", "PROMPTS.md")).Replace("\r\n", "\n"); // Windows checkouts use CRLF
         var recipe = doc.Split("## Adding a new sub-skill")[1].Split("## Versioning policy")[0];
         var example = Regex.Match(recipe, "```markdown\\n(.*?)\\n```", RegexOptions.Singleline);
         Assert.True(example.Success, "The extension recipe needs a copyable SKILL.md example.");
