@@ -14,11 +14,13 @@ your definitions often.
 
 What works today:
 
-- **Chat inside Grasshopper.** The Parti Chat component opens a chat window. Providers: Ollama (the default), Anthropic,
+- **Chat inside Grasshopper.** The Parti Chat component opens a chat window. Providers: Ollama, Anthropic,
   OpenAI, OpenRouter, any OpenAI-compatible server, or your own Claude or ChatGPT subscription through the official
-  `claude` / `codex` CLI.
+  `claude` / `codex` CLI. On startup, an installed `claude` executable is selected first (login is not
+  checked); otherwise the window looks for a local Ollama model. Settings lets you choose another provider.
 - **Design logic first.** Before any canvas write, the model must record a decomposition: inputs, rules, and
-  evaluations. At least one item must come from you. This rule is enforced in code, not only in the prompt.
+  evaluations. Code requires at least one item labelled `user_stated` by the model; it does not verify
+  that the item actually came from your message. You still approve each proposed write.
 - **You approve every write.** Each batch of edits opens a plan dialog that lists every call, the real Grasshopper
   component names, and the reason taken from the decomposition. Nothing is written until you click Approve.
 - **Canvas tools.** The model can find components by name, read the canvas (including runtime warnings), and add,
@@ -68,6 +70,12 @@ dotnet test Parti.sln -c Release
 With only a newer .NET installed, prefix both commands with `DOTNET_ROLL_FORWARD=Major`. The plugin is built to
 `src/Parti.Components/bin/Release/net7.0/Parti.gha`.
 
+NuGet restores use the committed `packages.lock.json` files in locked mode by
+default. For an intentional dependency update, run
+`dotnet restore Parti.sln -p:RestoreLockedMode=false --force-evaluate`, review the
+lock diffs, then verify `dotnet restore Parti.sln --locked-mode`. Python companion
+installation uses its [hashed lock procedure](mcp/parti_mcp/README.md#reproducible-development-install).
+
 To make an installable package:
 
 ```bash
@@ -94,7 +102,8 @@ canvas to open the chat window, and click **Settings** to choose the provider, m
 
 - No solver runs yet: Galapagos, Octopus, and Wallacei tools exist in the code but are not registered.
 - Settings and API keys are not saved between sessions.
-- The chat cannot set an Expression component's formula or a Panel's text.
+- The chat cannot set an Expression component's formula. `gh_set_input` includes Panel text support;
+  native Panel acceptance has not been verified.
 - Only the `claude` and `codex` subscription CLIs are supported.
 - Subscription CLI replies arrive whole, not streamed, and each call is limited to 180 seconds.
 - The MCP companion (`src/Parti.Mcp`, `mcp/parti_mcp`) is a stub.

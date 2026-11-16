@@ -6,7 +6,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security.AccessControl;
 using System.Security.Cryptography;
+using System.Security.Principal;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -159,7 +161,7 @@ public sealed class SubscriptionCliProvider : IAIProvider
         var workingDirectory = Path.Combine(Path.GetTempPath(), "parti-cli-" + Guid.NewGuid().ToString("N"));
         try
         {
-            Directory.CreateDirectory(workingDirectory);
+            CreatePrivateDirectory(workingDirectory);
             var invocation = new CliInvocation(
                 model,
                 options.Effort,
@@ -168,8 +170,8 @@ public sealed class SubscriptionCliProvider : IAIProvider
                 Path.Combine(workingDirectory, "schema.json"),
                 Path.Combine(workingDirectory, "last.json"),
                 options.MaxOutputBytes);
-            File.WriteAllText(invocation.SystemPromptPath, CliPromptRenderer.RenderSystem(request), Utf8NoBom);
-            File.WriteAllText(invocation.SchemaPath, CliReplyContract.SchemaJson, Utf8NoBom);
+            WritePrivateFile(invocation.SystemPromptPath, CliPromptRenderer.RenderSystem(request));
+            WritePrivateFile(invocation.SchemaPath, CliReplyContract.SchemaJson);
 
             var arguments = backend.BuildArguments(invocation);
             var transcript = CliPromptRenderer.RenderTranscript(request.Interactions, NewNonce());
@@ -182,6 +184,7 @@ public sealed class SubscriptionCliProvider : IAIProvider
                 {
                     File.Delete(invocation.LastMessagePath);
                 }
+                WritePrivateFile(invocation.LastMessagePath, string.Empty);
 
                 var stdin = attempt == 0 ? transcript : transcript + $"\n{RetryNotePrefix}{problem}. Reply again with exactly one JSON object in the reply format.\n";
                 CliProcessResult process;
@@ -273,6 +276,36 @@ public sealed class SubscriptionCliProvider : IAIProvider
             }
         }
         yield return new AIStreamChunk(AIStreamChunkKind.Done, Final: final, StopReason: final.StopReason);
+    }
+
+    private static void CreatePrivateDirectory(string path)
+    {
+        if (OperatingSystem.IsWindows())
+        {
+            using var identity = WindowsIdentity.GetCurrent();
+            var owner = identity.User ?? throw new UnauthorizedAccessException("No current user SID.");
+            var security = new DirectorySecurity();
+            security.SetOwner(owner);
+            security.SetAccessRuleProtection(isProtected: true, preserveInheritance: false);
+            security.AddAccessRule(new FileSystemAccessRule(owner, FileSystemRights.FullControl,
+                InheritanceFlags.ContainerInherit | InheritanceFlags.ObjectInherit,
+                PropagationFlags.None, AccessControlType.Allow));
+            // Supply the ACL at creation; children inherit only this owner's rule.
+            new DirectoryInfo(path).Create(security);
+        }
+        else
+        {
+            Directory.CreateDirectory(path, UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute);
+        }
+    }
+
+    private static void WritePrivateFile(string path, string text)
+    {
+        var options = new FileStreamOptions { Mode = FileMode.CreateNew, Access = FileAccess.Write, Share = FileShare.None };
+        if (!OperatingSystem.IsWindows()) options.UnixCreateMode = UnixFileMode.UserRead | UnixFileMode.UserWrite;
+        using var stream = new FileStream(path, options);
+        using var writer = new StreamWriter(stream, Utf8NoBom);
+        writer.Write(text);
     }
 
     private AIReturn Success(AIRequestCall request, CliReply reply, int input, int output)

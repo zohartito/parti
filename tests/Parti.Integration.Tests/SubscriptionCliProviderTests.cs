@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security.AccessControl;
+using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
@@ -38,6 +40,54 @@ public class SubscriptionCliProviderTests
     };
 
     // ----- argv ---------------------------------------------------------------------------------
+
+    [Theory]
+    [InlineData(CliBackendKind.Claude)]
+    [InlineData(CliBackendKind.Codex)]
+    public async Task TemporaryFiles_AreOwnerOnlyBeforeEveryAttempt(CliBackendKind kind)
+    {
+        var observed = new List<(string Path, bool Directory, UnixFileMode? Mode, FileSystemSecurity? Acl)>();
+        var runner = new FakeCliRunner((request, attempt) =>
+        {
+            var dir = request.WorkingDirectory;
+            foreach (var path in new[] { dir, Path.Combine(dir, "sys.txt"), Path.Combine(dir, "schema.json"), Path.Combine(dir, "last.json") })
+            {
+                var directory = path == dir;
+                if (OperatingSystem.IsWindows())
+                    observed.Add((path, directory, null, directory ? new DirectoryInfo(path).GetAccessControl() : File.Exists(path) ? new FileInfo(path).GetAccessControl() : null));
+                else
+                    observed.Add((path, directory, Directory.Exists(path) || File.Exists(path) ? File.GetUnixFileMode(path) : 0, null));
+            }
+            // Force a retry, checking that reply-file recreation remains private.
+            return attempt == 0 ? new CliProcessResult(0, "garbage", string.Empty) : Answer(kind, Reply("Done."));
+        });
+        var result = await Provider(kind, runner).CallAsync(Request("private prompt", Array.Empty<AIToolDefinition>()));
+        Assert.True(result.Success, result.ErrorMessage);
+        Assert.Equal(8, observed.Count);
+        foreach (var item in observed)
+        {
+            if (OperatingSystem.IsWindows())
+            {
+                using var identity = WindowsIdentity.GetCurrent();
+                Assert.NotNull(item.Acl);
+                var rules = item.Acl!.GetAccessRules(true, true, typeof(SecurityIdentifier)).Cast<FileSystemAccessRule>();
+                Assert.NotEmpty(rules);
+                Assert.All(rules, rule =>
+                {
+                    Assert.Equal(identity.User, rule.IdentityReference);
+                    Assert.Equal(AccessControlType.Allow, rule.AccessControlType);
+                });
+                if (item.Directory) Assert.True(item.Acl.AreAccessRulesProtected);
+            }
+            else
+            {
+                var expected = UnixFileMode.UserRead | UnixFileMode.UserWrite;
+                if (item.Directory) expected |= UnixFileMode.UserExecute;
+                Assert.Equal(expected, item.Mode);
+            }
+            Assert.False(item.Directory ? Directory.Exists(item.Path) : File.Exists(item.Path));
+        }
+    }
 
     private static CliInvocation Invocation() => new(
         "claude-sonnet-5", "low", "/tmp/w", "/tmp/w/sys.txt", "/tmp/w/schema.json", "/tmp/w/last.json", 1024);

@@ -1,0 +1,4 @@
+# Build backend; keep in sync with build-system.requires in pyproject.toml.
+hatchling==1.33.0
+# Hatchling dynamically requires this for the documented editable install.
+editables~=0.3

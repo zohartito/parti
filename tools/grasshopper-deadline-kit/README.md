@@ -50,8 +50,15 @@ The stitch script writes:
 - `grasshopper_slider_loop_labeled.gif`
 - `grasshopper_slider_contact_sheet.png`
 
+## Smoke tests
+
+With ffmpeg installed, run `python3 -m unittest discover -s tests/tools -v`.
+The tests generate synthetic frames and never open Rhino.
+
 ## Notes
 
+- Relative source and output directories are supported. Inputs are converted to BMP before stitching.
+- ffmpeg logs are saved under the output directory in `_logs/`; failures print the log path and last 30 lines to stderr.
 - Use `GH_SKIP_COUNTS` when the first exported frame is a bad setup frame.
 - If the installed ffmpeg does not include the `drawtext` filter, the labeled
   outputs are still created but text overlays are omitted.

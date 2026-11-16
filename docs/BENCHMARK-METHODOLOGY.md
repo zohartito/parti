@@ -1,10 +1,41 @@
-# Parti — Benchmark Methodology
+# Parti — Benchmark Methodology and Archived Proposal
 
-*Last updated 2026-04-19. Companion to the auto-generated report at [EVAL-v0.1.md](EVAL-v0.1.md).*
+## Current reproduction (public v0.9.1)
 
-This document is the reference for how Parti measures the claims it makes in the project README and docs. A reader who wants to reproduce a pass-rate number, audit a prompt-change regression, or extend the fixture suite should be able to do so from this document alone. Where something is not yet implemented, the document flags it as planned and names the target milestone.
+The committed [hermetic report](EVAL-v0.1.md) contains **29/29 passing fixtures**.
+It has no timings and is byte-stable for identical results. Expected error endings
+count as passes when the fixture predicates and terminal status match. The default
+suite uses fakes, requires no model or Rhino process, and was verified on macOS
+with SDK 10.0.400 and `DOTNET_ROLL_FORWARD=Major`. Windows is the CI build platform;
+build/test support is separate from acceptance in a live Rhino session.
 
-Sections are ordered to match the order a careful reader would use: why the benchmark exists, what it measures, how a fixture is shaped, what predicates it supports, how a run is reproduced, how results are scored, how the suite grows, what the threats to validity are, what the surrounding landscape looks like, what is still open, and how to cite the work.
+From the repository root, with a .NET SDK and the .NET 7 runtime installed:
+
+```bash
+dotnet restore Parti.sln
+dotnet test tests/Parti.Eval.v01/Parti.Eval.v01.csproj -c Release --no-restore --logger trx --results-directory TestResults
+```
+
+With only a newer runtime installed, prefix the test command with
+`DOTNET_ROLL_FORWARD=Major`. For all four suites, substitute `Parti.sln` for the
+test project. TRX is produced only when requested with `--logger trx`; the default
+command does not create it. `EvalReporter.WriteReport` rewrites `docs/EVAL-v0.1.md`
+with result, runtime status, provider/dispatch counts and failed predicates, without
+timings. Running other suites or filtering out that test does not regenerate it.
+
+The live-model lane is implemented as an **opt-in** runner over a simulated canvas,
+not a live `.gh` runner. See [EVAL-LIVE.md](EVAL-LIVE.md) for configuration and raw
+result links. Its current published table uses **8,192** output tokens. See the
+[current fixture schema](../tests/Parti.Eval.v01/fixtures/README.md) and
+[predicate reference](EVAL-v0.2.md) for strict loading and session-tool rules.
+
+## Archived April 2026 design proposal
+
+The numbered sections below preserve the earlier benchmark design and milestone
+plans. They are historical context, **not current implementation or reproduction
+instructions**: their old fixture counts, platform restrictions, monolithic prompt,
+planned live lane, and proposed artifacts predate the current harness. Use the
+current instructions and linked source-backed reports above.
 
 ---
 
@@ -160,7 +191,7 @@ Neither the report nor the logs contain secrets. Both are safe to attach to a PR
 **Step-by-step reproduction.** To reproduce the numbers in [EVAL-v0.1.md](EVAL-v0.1.md):
 
 1. Install the .NET 7 SDK. Confirm with `dotnet --version` returning a `7.0.x` string.
-2. Clone the repository and check out the commit whose numbers you want to reproduce. Every published pass rate names the commit.
+2. Clone the repository and check out the commit whose numbers you want to reproduce. The published live-result `gitSha` fields contain build labels rather than commit hashes, so those exact measured sources cannot be selected from this repository. Future publications should retain the source commit and per-run configuration, redacting hostnames separately.
 3. Restore packages: `dotnet restore`.
 4. Run the suite: `dotnet test tests/Parti.Eval.v01/Parti.Eval.v01.csproj`. The command returns exit code 0 when every fixture passes.
 5. Open `docs/EVAL-v0.1.md`. The table is overwritten by the last run; confirm the row counts, statuses, and tool-call counts match the published table.
@@ -175,7 +206,7 @@ A reviewer who sees a mismatch should file it as a reproducibility issue. Tolera
 
 **Per-fixture.** Each fixture resolves to a binary pass or fail. A fixture passes when every predicate in its `expected` block evaluates true after the session finishes. A predicate with a null value is not evaluated. A session that throws an unexpected exception fails with the exception message attached to the fixture row.
 
-**Aggregate.** The headline metric is the percentage of fixtures passing: `passing / total * 100`, rounded to one decimal. The v0.1 report currently shows 11 of 12 passing; the one non-passing case is `08_max_turns_exhausted`, which is marked `error` by design because the fixture exercises the turn-limit abort path (the surrounding infrastructure work to classify a planned abort as a pass is tracked separately). The aggregate in EVAL-v0.1 is therefore reported as 11/12 with a note; it is not 91.7%.
+**Aggregate.** The headline metric is the percentage of fixtures passing: `passing / total * 100`, rounded to one decimal. The April proposal described 11 of 12 passing; the one non-passing case is `08_max_turns_exhausted`, which is marked `error` by design because the fixture exercises the turn-limit abort path (the surrounding infrastructure work to classify a planned abort as a pass is tracked separately). The aggregate in EVAL-v0.1 is therefore reported as 11/12 with a note; it is not 91.7%.
 
 **Category breakdown.** The v0.2 report will additionally break the aggregate down by fixture category (`add`, `edit`, `describe`, `connect`, `mixed`) and by difficulty (`easy`, `medium`, `hard`). These two breakdowns matter because readers want to know whether the pass rate is uniform across scenario types or whether it masks a poor result in a specific lane.
 
@@ -269,7 +300,7 @@ The 50-fixture target also supports category-level rates without collapsing to u
 
 **Observer effects.** Parti's maintainer writes prompts, writes fixtures, and evaluates the suite. The same person is incentivized to see a green suite. Mitigations: (a) the fixture specs define correctness in terms a second reader can apply, (b) all fixtures and their predicates are committed and diff-reviewable, (c) community fixture contributions are invited specifically to break this feedback loop.
 
-**Provider-shape validity.** The hermetic lane assumes the canned provider responses faithfully reflect the shape of real Anthropic and Ollama responses. If a provider changes its response schema (a new content block type, a different stop-reason string, a re-shuffled tool-call envelope), the hermetic lane would continue to pass while the live lane would fail. Mitigations: (a) the `FakeAIProvider` shape is derived from the provider's public documentation and mirrored byte-for-byte against sample captures; (b) the planned v0.7.2 live-model lane is the canary — if it diverges from hermetic results, the shape has drifted; (c) provider SDK versions are pinned in `Directory.Packages.props` so an upstream shape change surfaces as a deliberate upgrade, not a silent drift.
+**Provider-shape validity.** The hermetic lane assumes the canned provider responses faithfully reflect the shape of real Anthropic and Ollama responses. If a provider changes its response schema (a new content block type, a different stop-reason string, a re-shuffled tool-call envelope), the hermetic lane would continue to pass while the live lane would fail. Mitigations: (a) the `FakeAIProvider` shape is derived from the provider's public documentation and mirrored byte-for-byte against sample captures; (b) the planned v0.7.2 live-model lane is the canary — if it diverges from hermetic results, the shape has drifted; (c) direct NuGet versions are declared in the individual `.csproj` files so an upstream shape change surfaces as a deliberate upgrade, not a silent drift.
 
 **Canvas-state validity (`.gh` fixtures).** Assertions against `after.gh` assume the canvas predicates cover the user-visible facts the prompt cares about. A fixture author who writes predicates the prompt does not actually imply — for example, asserting a specific slider value when the prompt only said "add a slider" — encodes implementation details as correctness. The anti-pattern is flagged in [GH-FIXTURE-SPEC.md](GH-FIXTURE-SPEC.md) §"Anti-patterns" but enforcement is by review, not by tooling. A v0.8 backlog item is a lint step that flags `canvasAssertions` referencing facts not present in the `userPrompt`; this is a best-effort heuristic rather than a guarantee.
 
@@ -283,7 +314,7 @@ A survey of public materials across Grasshopper-adjacent AI plugins as of April 
 
 Parti's methodology is, to our knowledge, the first public benchmark for AI-in-Grasshopper. The framing is not "Parti outperforms baseline X by Y percent" — that claim requires baselines that do not exist in any comparable form — but "Parti defines and publishes a methodology that a future comparison across vendors could use".
 
-If another project later publishes a fixture-based benchmark, Parti's fixtures and predicates are MIT-equivalent-licensed for reuse (final license to be confirmed at v1.0) so the two suites can be unioned and cross-run. A cross-vendor benchmark is a long-term aspiration, not a near-term deliverable.
+Fixture reuse is governed by the [fixture license statement in NOTICES.md](NOTICES.md#fixture-license). This repository provides no separate MIT-equivalent grant. A cross-vendor benchmark remains a long-term aspiration, not a near-term deliverable.
 
 **Related evaluation frameworks.** The design draws on prior art in LLM-as-agent evaluation without copying any single framework wholesale. `SWE-bench` established the pattern of grounding correctness in real-repository fixtures with predicate-style assertions. `MultiPL-E` and `HumanEval` established the pattern of hermetic scripted evaluation on a small fixture set. `AgentBench` and `ToolBench` established the pattern of evaluating tool-using agents on multi-turn trajectories rather than single-shot outputs. Parti's benchmark is closest in spirit to the trajectory-style evaluations: a fixture is a prompt plus an expected trajectory shape, not a prompt plus a single expected string. What is specific to Parti is that the trajectory runs through a Grasshopper-domain tool surface and terminates in a canvas state, not in generic code.
 
@@ -335,6 +366,6 @@ Citations of specific fixtures should include the fixture id and the Parti commi
 - [EVAL-v0.2.md](EVAL-v0.2.md) — live predicate specification. Hand-authored; source of truth for the v0.2 predicate vocabulary.
 - [GH-FIXTURE-SPEC.md](GH-FIXTURE-SPEC.md) — on-disk schema for `.gh` fixtures, including the canvas-predicate DSL.
 - [PROMPTS.md](PROMPTS.md) — governance for changes to the shipped system prompt; defines the eval gate.
-- [prompts/system_v0.6.md](../prompts/system_v0.6.md) — canonical system prompt pinned by v0.6 fixtures.
+- [prompts/parti-foundations/SKILL.md](../prompts/parti-foundations/SKILL.md) — current canonical Layer 0 prompt; the historical `system_v0.6.md` is absent from this public checkout.
 - [tests/Parti.Eval.v01/fixtures/README.md](../tests/Parti.Eval.v01/fixtures/README.md) — on-disk schema for hermetic JSON fixtures.
 - [tests/Parti.Eval.v01/FixtureSchema.cs](../tests/Parti.Eval.v01/FixtureSchema.cs) — in-memory representation of a fixture; source of truth for the predicate set.
