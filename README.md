@@ -96,7 +96,8 @@ canvas to open the chat window, and click **Settings** to choose the provider, m
 
 - No solver runs yet: Galapagos, Octopus, and Wallacei tools exist in the code but are not registered.
 - Settings and API keys are not saved between sessions.
-- The chat cannot set an Expression component's formula or a Panel's text.
+- The chat cannot set an Expression component's formula. `gh_set_input` includes Panel text support;
+  native Panel acceptance has not been verified.
 - Only the `claude` and `codex` subscription CLIs are supported.
 - Subscription CLI replies arrive whole, not streamed, and each call is limited to 180 seconds.
 - The MCP companion (`src/Parti.Mcp`, `mcp/parti_mcp`) is a stub.
