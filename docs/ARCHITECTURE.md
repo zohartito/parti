@@ -1,8 +1,8 @@
 # Parti — Architecture
 
-Public summary of how the shipped product is wired (2026-09-27 product-wiring wave). The design record is
-[design/2026-09-27-product-wiring.md](design/2026-09-27-product-wiring.md) plus
-[design/2026-09-27-review-amendments.md](design/2026-09-27-review-amendments.md), which overrides it where they differ.
+Public summary of how the shipped product is wired (2026-09-27 product-wiring wave). The internal design records are not included in this public repository. Current wiring is defined by
+[`PartiComposition`](../src/Parti.Core.Grasshopper/Chat/PartiComposition.cs) and
+[`ConversationSession`](../src/Parti.Core/Sessions/ConversationSession.cs).
 
 ## Layers
 

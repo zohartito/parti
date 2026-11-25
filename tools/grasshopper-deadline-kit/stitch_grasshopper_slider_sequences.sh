@@ -14,11 +14,15 @@ GIF_FPS="${GH_GIF_FPS:-4}"
 GIF_WIDTH="${GH_GIF_WIDTH:-960}"
 CONTACT_TILE="${GH_CONTACT_TILE:-6x4}"
 
+mkdir -p "$OUT"
+OUT="$(cd "$OUT" && pwd -P)"
+
 TMP="$OUT/_combined_frames"
 SEGMENTS="$OUT/_segments"
 CONCAT="$OUT/concat.txt"
 
-mkdir -p "$OUT" "$TMP" "$SEGMENTS"
+LOGS="$OUT/_logs"
+mkdir -p "$TMP" "$SEGMENTS" "$LOGS"
 rm -f "$TMP"/frame_*.bmp "$SEGMENTS"/*.mp4 "$CONCAT"
 
 frame_index=0
@@ -30,6 +34,19 @@ if "$FFMPEG" -hide_banner -filters 2>/dev/null | grep -q " drawtext "; then
 else
   echo "ffmpeg drawtext filter not found; labeled outputs will omit text overlays." >&2
 fi
+
+run_ffmpeg() {
+  local log="$LOGS/$1.log"
+  shift
+  if "$FFMPEG" "$@" >"$log" 2>&1; then
+    return 0
+  else
+    local status=$?
+    echo "ffmpeg failed (exit $status). Log: $log" >&2
+    tail -n 30 "$log" >&2
+    return "$status"
+  fi
+}
 
 copy_sequence() {
   local stem="$1"
@@ -63,8 +80,9 @@ copy_sequence() {
 
     local name
     name="$(printf "frame_%03d.bmp" "$copied")"
-    cp -f "$f" "$segment_dir/$name"
-    cp -f "$f" "$TMP/$(printf "frame_%03d.bmp" "$frame_index")"
+    run_ffmpeg "convert_${segment_index}_${copied}" -y -i "$f" \
+      -frames:v 1 -pix_fmt bgr24 "$segment_dir/$name"
+    cp -f "$segment_dir/$name" "$TMP/$(printf "frame_%03d.bmp" "$frame_index")"
     frame_index=$((frame_index + 1))
     copied=$((copied + 1))
     local_index=$((local_index + 1))
@@ -82,10 +100,10 @@ copy_sequence() {
     vf="scale=1280:-2:flags=lanczos,drawbox=x=0:y=0:w=iw:h=70:color=black@0.45:t=fill,drawtext=text='${label}':x=34:y=24:fontsize=28:fontcolor=white,format=yuv420p"
   fi
 
-  "$FFMPEG" -y -framerate "$FPS" \
+  run_ffmpeg "segment_$segment_index" -y -framerate "$FPS" \
     -i "$segment_dir/frame_%03d.bmp" \
     -vf "$vf" \
-    -an "$clip" >/tmp/gh_deadline_segment.log 2>&1
+    -an "$clip"
 
   printf "file '%s'\n" "$clip" >> "$CONCAT"
   echo "Added $stem ($copied frames) as '$label'"
@@ -101,25 +119,25 @@ if [ "$frame_index" -eq 0 ]; then
   exit 1
 fi
 
-"$FFMPEG" -y -framerate "$FPS" \
+run_ffmpeg clean_mp4 -y -framerate "$FPS" \
   -i "$TMP/frame_%03d.bmp" \
   -vf "scale=1280:-2:flags=lanczos,format=yuv420p" \
-  -an "$OUT/grasshopper_slider_loop.mp4" >/tmp/gh_deadline_clean_mp4.log 2>&1
+  -an "$OUT/grasshopper_slider_loop.mp4"
 
-"$FFMPEG" -y -i "$OUT/grasshopper_slider_loop.mp4" \
+run_ffmpeg clean_gif -y -i "$OUT/grasshopper_slider_loop.mp4" \
   -vf "fps=$GIF_FPS,scale=$GIF_WIDTH:-1:flags=lanczos,split[s0][s1];[s0]palettegen=max_colors=160[p];[s1][p]paletteuse=dither=bayer:bayer_scale=5" \
-  -loop 0 "$OUT/grasshopper_slider_loop.gif" >/tmp/gh_deadline_clean_gif.log 2>&1
+  -loop 0 "$OUT/grasshopper_slider_loop.gif"
 
-"$FFMPEG" -y -f concat -safe 0 -i "$CONCAT" \
-  -c copy "$OUT/grasshopper_slider_loop_labeled.mp4" >/tmp/gh_deadline_labeled_mp4.log 2>&1
+run_ffmpeg labeled_mp4 -y -f concat -safe 0 -i "$CONCAT" \
+  -c copy "$OUT/grasshopper_slider_loop_labeled.mp4"
 
-"$FFMPEG" -y -i "$OUT/grasshopper_slider_loop_labeled.mp4" \
+run_ffmpeg labeled_gif -y -i "$OUT/grasshopper_slider_loop_labeled.mp4" \
   -vf "fps=$GIF_FPS,scale=$GIF_WIDTH:-1:flags=lanczos,split[s0][s1];[s0]palettegen=max_colors=160[p];[s1][p]paletteuse=dither=bayer:bayer_scale=5" \
-  -loop 0 "$OUT/grasshopper_slider_loop_labeled.gif" >/tmp/gh_deadline_labeled_gif.log 2>&1
+  -loop 0 "$OUT/grasshopper_slider_loop_labeled.gif"
 
-"$FFMPEG" -y -pattern_type glob -i "$TMP/frame_*.bmp" \
+run_ffmpeg contact -y -pattern_type glob -i "$TMP/frame_*.bmp" \
   -vf "scale=240:135,tile=$CONTACT_TILE" \
-  -frames:v 1 "$OUT/grasshopper_slider_contact_sheet.png" >/tmp/gh_deadline_contact.log 2>&1
+  -frames:v 1 "$OUT/grasshopper_slider_contact_sheet.png"
 
 echo "Done:"
 echo "$OUT/grasshopper_slider_loop.mp4"

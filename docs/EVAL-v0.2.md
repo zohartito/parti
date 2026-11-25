@@ -6,7 +6,7 @@
 
 ## 1. Purpose
 
-This document is the reference for the **hermetic fixture predicate vocabulary** consumed by `tests/Parti.Eval.v01/`. It lists every predicate a fixture's `expected` block may carry, what it asserts, the format of its JSON value, and the minimum fixture shape needed to illustrate each one.
+This document is the reference for the **hermetic fixture predicate vocabulary** consumed by `tests/Parti.Eval.v01/`. It describes the original predicate families and the current loading rules. The complete closed set, including product-loop and hermetic-canvas predicates, is listed in [fixtures/README.md](../tests/Parti.Eval.v01/fixtures/README.md#predicates-closed-set) and `FixtureExpected`. Examples below are `expected` fragments to merge into a complete fixture.
 
 Fixture loader, runner, and evaluator source of truth:
 
@@ -14,22 +14,23 @@ Fixture loader, runner, and evaluator source of truth:
 - [`PredicateEvaluator.cs`](../tests/Parti.Eval.v01/PredicateEvaluator.cs) — predicate implementation; collects every violation into a structured failure list.
 - [`EvalFixtureTests.cs`](../tests/Parti.Eval.v01/EvalFixtureTests.cs) — xUnit `[Theory]` that discovers fixtures and asserts on the evaluator's output.
 
-A predicate added to this document must also be implemented in `PredicateEvaluator.Evaluate` and exercised in `PredicateEvaluatorTests`. A predicate referenced in a fixture but unknown to the evaluator is a silent pass today; the intent for v0.3 is a validator that rejects unknown predicate names at load time (§5).
+A predicate added to this document must also be implemented in `PredicateEvaluator.Evaluate` and exercised in `PredicateEvaluatorTests`. The loader rejects unknown keys anywhere in the fixture, duplicate keys, and case-variant property names. Misspelled predicates fail loading; they do not silently pass.
 
 ---
 
 ## 2. Predicate vocabulary
 
-Every field below is optional. A null / missing field means "do not check". All string comparisons are `Ordinal` unless flagged as **case-insensitive**.
+`expected.terminalStatus` is required. Other fields are optional; null / missing means "do not check". Empty predicate operands are rejected. All string comparisons are `Ordinal` unless flagged as **case-insensitive**.
 
 ### 2.1 Session-shape predicates (v0.1, unchanged)
 
 | Field | JSON type | Asserts |
 |---|---|---|
+| `terminalStatus` | string | **Required.** Controller status: `Idle`, `Paused`, or `Error`. Live briefs may use alternatives such as `Idle\|Paused`; scripted fixtures require one status. |
 | `finalStopReason` | string | The last provider response's `StopReason` equals this string. Typical: `"end_turn"`, `"tool_use"`. |
 | `finalStatus` | string | The `AIReturn.Status` of the final return equals this string. One of `"Finished"`, `"Error"`. |
 | `minInteractions` | int | `session.History.Count` is at least this value. |
-| `toolCallCount` | int | Exact count of tool calls dispatched by `FakeToolDispatcher`. Does not include session-intercepted tools such as `ask_user`. |
+| `toolCallCount` | int | Exact count of tool calls that reached the product tool dispatcher. Does not include session-intercepted tools such as `ask_user`. |
 | `providerCallCount` | int | Exact count of provider calls made (equal to number of scripted steps consumed). |
 | `errorContains` | string | Substring that must appear in the final return's `ErrorMessage`. |
 | `textContains` | string | Substring that must appear (case-sensitive) in at least one assistant `AIInteractionText.Content`. |
@@ -39,10 +40,11 @@ Example (`02_add_slider.json`):
 ```jsonc
 {
   "expected": {
+    "terminalStatus": "Idle",
     "finalStopReason": "end_turn",
     "finalStatus": "Finished",
     "toolCallCount": 1,
-    "textContains": "NumberSlider"
+    "textContains": "Number Slider"
   }
 }
 ```
@@ -56,13 +58,14 @@ Example (`02_add_slider.json`):
 | `toolCallsMinCount` | object `{tool: int}` | Per-tool lower bound. A tool absent from history counts as 0. Use `toolCallsMaxCount` with 0 to forbid a tool — `toolCallsMinCount: {"gh_delete": 0}` is always true and therefore useless. |
 | `toolCallsMaxCount` | object `{tool: int}` | Per-tool upper bound. Value `0` means the tool must not be called. |
 
-Counting rule: tool-call counts are sourced from `session.History` (not from the dispatcher), so session-intercepted tools such as `ask_user` are included. Sibling tools called in the same pass as `ask_user` also count, because they are dispatched before the pause is recorded.
+Counting rule: tool-call counts are sourced from `session.History` (not from the dispatcher), so session-intercepted tools such as `ask_user` are included. Rejected model calls still count in history. `ask_user` must be the sole tool call in its response; sibling calls cause rejection of the whole batch without dispatch or a pause. `parti_record_decomposition` likewise must be the sole tool call.
 
 Example (`20_group_workflow.json`):
 
 ```jsonc
 {
   "expected": {
+    "terminalStatus": "Idle",
     "toolCallsMinCount": { "gh_add_component": 2, "gh_group": 1 },
     "toolCallsMaxCount": { "gh_delete": 0 }
   }
@@ -74,6 +77,7 @@ Example (`21_layout_grid.json`):
 ```jsonc
 {
   "expected": {
+    "terminalStatus": "Idle",
     "toolCallsMinCount": { "gh_add_component": 4, "gh_layout": 1 },
     "toolCallsMaxCount": { "gh_delete": 0 }
   }
@@ -95,6 +99,7 @@ Example (`22_ask_user_clarify.json`):
 ```jsonc
 {
   "expected": {
+    "terminalStatus": "Paused",
     "finalTextContainsAny": ["which", "clarify", "specify"]
   }
 }
@@ -105,6 +110,7 @@ Example (`21_layout_grid.json`, using `contains_all`):
 ```jsonc
 {
   "expected": {
+    "terminalStatus": "Idle",
     "finalTextContainsAll": ["step 1", "step 2"]
   }
 }
@@ -156,7 +162,6 @@ Predicates that came up while shipping v0.2 but were intentionally deferred:
 - **`toolCallOrder: [...]`** — ordered sequence of tool names. Today a fixture cannot express "must call `gh_describe` before `gh_delete`".
 - **`toolCallArgsContain: {tool: {arg: value}}`** — argument-level assertion. v0.2 checks names and counts but treats `Arguments` as opaque.
 - **Predicate combinators (AND / OR / NOT)** — tree-shaped predicates so a fixture can say "either this tool count with that text, or this error substring". The flat-field model scales to about a dozen predicates before it becomes easier to express invariants as a tree than as a conjunction of flat fields.
-- **Unknown-field validation at load time** — today an unknown predicate name in a fixture is silently ignored by `JsonConvert.DeserializeObject`. A v0.3 validator should reject unknown fields so typos do not produce silent passes.
 - **Last-turn-only text matching** — `lastAssistantTextContains(Any|All)` targeted at only the final assistant text block, not the entire conversation. `finalText*` predicates currently scan all assistant text.
 
 Each of these unblocks specific fixture classes in the v0.7 suite plan (per [BENCHMARK-METHODOLOGY.md §7](BENCHMARK-METHODOLOGY.md)). They are tracked in the roadmap under v0.7.1 / v0.8.
@@ -165,7 +170,7 @@ Each of these unblocks specific fixture classes in the v0.7 suite plan (per [BEN
 
 ## 6. Compatibility
 
-v0.2 is fully backward compatible with v0.1 fixtures. Every field in the v0.1 schema (`finalStopReason`, `finalStatus`, `minInteractions`, `textContains`, `toolCallCount`, `providerCallCount`, `errorContains`) is preserved with identical semantics. The only behavioural change is failure reporting: where v0.1 stopped at the first `Assert.Equal` failure, v0.2 aggregates every violation into a single message. A v0.1 fixture that passed under v0.1 passes unchanged under v0.2.
+The current loader preserves the older predicate fields but is stricter than the original v0.1 format. Older fixtures must add `expected.terminalStatus`, remove unknown keys, and use registered product tool names. Session tools must be sole calls; mutating scripts need a complete decomposition before writing. Follow the current [fixture schema](../tests/Parti.Eval.v01/fixtures/README.md) when migrating examples.
 
 ---
 

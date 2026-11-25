@@ -42,7 +42,11 @@ Grasshopper's list of loaded libraries should show Parti with version 0.9.1.
 Drop **Parti Chat** on the canvas; the chat window opens. Double-click the component to bring it back if you close it.
 Click **Settings** to choose a provider, model, and endpoint:
 
-- **Ollama (local, the default).** Install [Ollama](https://ollama.com) on this machine or another one you can reach,
+The window selects Claude subscription first when a `claude` executable is found,
+without checking whether it is signed in. Otherwise it looks for a local Ollama
+model. Choose a different provider in Settings if needed.
+
+- **Ollama (local).** Install [Ollama](https://ollama.com) on this machine or another one you can reach,
   pull a tool-calling model (verified: `qwen3.6:27b`), and keep it running. Set **Endpoint** to the server
   (default `http://localhost:11434`; for example `http://ollama-host:11434` for a machine on your network) and click **List models**.
   Parti warms the model in the background; the first reply after a cold load can take about a minute.

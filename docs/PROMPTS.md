@@ -1,6 +1,6 @@
 # Parti System Prompt Governance
 
-*Last updated 2026-09-27. Applies from v0.8.5 onward. For v0.6 through v0.8.4 history, see `system_v0.6.md` and the v0.6 revision of this document in git history.*
+*Last updated 2026-09-27. Applies from v0.8.5 onward. The old monolithic prompt and internal pre-publication revisions are not included in this public checkout.*
 
 ---
 
@@ -22,9 +22,9 @@ As of April 2026 we found no other Grasshopper AI copilot that publishes its sys
 
 Through v0.8.4 the system prompt was a single monolithic Markdown file at `prompts/system_vX.Y.md` (most recently `system_v0.6.md`). Every request shipped the full prompt regardless of whether the user needed it.
 
-Starting in v0.8.5 the prompt is split into a three-layer skill bundle under `prompts/parti-foundations/`. Only Layer 0 is always in context. Layers 1 and 2 load on demand, driven by router decisions made during a session.
+Starting in v0.8.5 the prompt is split into a three-layer skill bundle under `prompts/parti-foundations/`. Layer 0 is included on every entry call. Layer 1 is selected per message; Layer 2 has a loader API but is not wired into the product chat.
 
-The old monolithic prompt was moved to `prompts/deprecated/system_v0.6.md` in v0.8.5 and removed in the 2026-09-27 product-wiring wave. It survives only in git history.
+The old monolithic prompt was moved to `prompts/deprecated/system_v0.6.md` in v0.8.5 and removed in the 2026-09-27 product-wiring wave. It is not included in the public checkout.
 
 ---
 
@@ -38,7 +38,7 @@ This is the only prompt file that ships with every request. It contains:
 
 - The identity line (who Parti is, who the users are).
 - The global safety rules and reply-style rules.
-- A short index of Layer 1 sub-skills with one-line triggers so the model knows when to ask the router to load one.
+- A short index of Layer 1 sub-skills for model guidance; the keyword router reads manifest tags separately.
 - The tool catalogue at headline level (names and one-line descriptions of each `gh_*` tool).
 
 Keep Layer 0 small. Target: under 3 KB of rendered Markdown after the loader strips the YAML frontmatter. Anything that applies only sometimes belongs in Layer 1, not here.
@@ -56,49 +56,43 @@ Each sub-skill is a directory that owns one Parti capability area. The `SKILL.md
 - `parti-optimize` — setting up Galapagos, Wallacei, or Octopus runs.
 - `parti-fabricate` — preparing a definition for CNC, laser, or 3D print output.
 
-A Layer 1 SKILL.md loads only when `SkillRouter` decides the current turn matches one of that sub-skill's triggers. Once loaded, it stays resident for the remainder of the session (or until the session is compacted).
+A Layer 1 SKILL.md loads when `KeywordSkillRouter` matches the current message against the sub-skill manifest tags. Each session entry call rebuilds the system prompt; previously selected skills are not retained unless the new message selects them again.
 
-### Layer 2: References and templates (on-demand)
+### Layer 2: References and templates (loader API only)
 
 Paths:
 - `prompts/parti-foundations/<sub-skill-name>/references/*.md`
 - `prompts/parti-foundations/<sub-skill-name>/templates/*.json`
 
-Layer 2 files are never loaded automatically. The model requests them by name from `SkillLoader` when it needs deep reference material (for example, the full list of `Range` component input conventions) or a ready-made JSON template (for example, a Galapagos solver config skeleton).
-
-This keeps the per-request token count low. A session that never touches Galapagos never pays the token cost of the Galapagos reference.
+`SkillLoader.LoadLayer2` can read these files, but no product caller or registered tool invokes it. The chat model cannot fetch references or templates on demand. Shipped reference files are available for contributors to read; they do not enter the product prompt.
 
 ---
 
 ## Directory layout
 
+Current prompt files (each Layer 1 directory also includes `eval_set.json`):
+
 ```
 prompts/
-  README.md                        Filename conventions and PR rules.
+  README.md
   parti-foundations/
-    SKILL.md                       Layer 0. Always in context.
+    SKILL.md                       Layer 0.
     parti-ghcanvas/
-      SKILL.md                     Layer 1. Loaded when router matches.
-      references/
-        tree-hygiene.md            Layer 2. Loaded on demand.
-        id-conventions.md          Layer 2.
-      templates/
-        range.json                 Layer 2. On-demand JSON skeleton.
-        slider.json                Layer 2.
+      SKILL.md                     Layer 1.
+      references/                  Layer 2 files; not retrieved by the product.
+        grasshopper-primitives.md
+        tree-ops-decision-table.md
+        plugin-intent-router.md
     parti-formalize/
       SKILL.md
-      references/
-        ...
+      templates/
+        decomposition.json
     parti-abstract/
       SKILL.md
     parti-feedback/
       SKILL.md
     parti-optimize/
       SKILL.md
-      references/
-        galapagos-config.md
-      templates/
-        galapagos-default.json
     parti-fabricate/
       SKILL.md
 ```
@@ -111,7 +105,7 @@ Sub-skill directory names start with `parti-` by convention. The directory name 
 
 ### SkillLoader
 
-`Parti.Core.Prompts.SkillLoader` resolves a skill path (for example `parti-ghcanvas/SKILL.md` or `parti-optimize/templates/galapagos-default.json`) to the file's text content.
+`Parti.Core.Prompts.SkillLoader` resolves a skill path (for example `parti-ghcanvas/SKILL.md` or `parti-formalize/templates/decomposition.json`) to the file's text content.
 
 At build time, the `Parti.Components` csproj embeds every file under `prompts/parti-foundations/` as a .NET embedded resource. The `LogicalName` uses this convention:
 
@@ -125,8 +119,8 @@ Worked examples:
 |---|---|
 | `prompts/parti-foundations/SKILL.md` | `Parti.Prompts.parti-foundations/SKILL.md` |
 | `prompts/parti-foundations/parti-ghcanvas/SKILL.md` | `Parti.Prompts.parti-foundations/parti-ghcanvas/SKILL.md` |
-| `prompts/parti-foundations/parti-ghcanvas/references/tree-hygiene.md` | `Parti.Prompts.parti-foundations/parti-ghcanvas/references/tree-hygiene.md` |
-| `prompts/parti-foundations/parti-optimize/templates/galapagos-default.json` | `Parti.Prompts.parti-foundations/parti-optimize/templates/galapagos-default.json` |
+| `prompts/parti-foundations/parti-ghcanvas/references/tree-ops-decision-table.md` | `Parti.Prompts.parti-foundations/parti-ghcanvas/references/tree-ops-decision-table.md` |
+| `prompts/parti-foundations/parti-formalize/templates/decomposition.json` | `Parti.Prompts.parti-foundations/parti-formalize/templates/decomposition.json` |
 
 `SkillLoader` reads the resource stream and returns the text. It also parses and strips any YAML frontmatter between `---` fences before handing the content to the model.
 
@@ -134,15 +128,15 @@ File-system fallback is optional. If the loader cannot find a resource and the r
 
 ### SkillRouter
 
-`Parti.Core.Prompts.SkillRouter` decides which Layer 1 sub-skills are active for a given turn.
+`Parti.Core.Prompts.KeywordSkillRouter` decides which Layer 1 sub-skills are active for a given message.
 
-The router reads the triggers listed under each sub-skill's entry in Layer 0, matches them against the current user message and recent canvas state, and asks `SkillLoader` to load the sub-skill's `SKILL.md` into the session context. Once loaded, the sub-skill stays resident for the rest of the session.
+The product uses `KeywordSkillRouter`, which discovers sub-skill manifests and matches their inline `tags` against the current message. The Layer 0 index is guidance for the model, not router configuration. `SessionPromptBuilder` combines Layer 0 with the selected Layer 1 bodies on each entry call; it does not accumulate skills across messages.
 
-Layer 2 files do not go through the router. The model itself asks `SkillLoader` to fetch a specific reference or template by name, usually in response to a tool-call result or a user follow-up that needs deeper detail.
+Layer 2 is not routed or retrieved by the product. `SkillLoader.LoadLayer2` is currently an API exercised only by tests.
 
 ### Product wiring
 
-`PartiComposition` builds the product prompt with `SessionPromptBuilder(new SkillLoader(source), new KeywordSkillRouter(source))`. In Rhino the source is `EmbeddedResourceSkillSource` over the plugin assembly; in tests it is `FileSystemSkillSource` over `prompts/parti-foundations`. The builder runs once per session entry call (a new message, a follow-up, or a resume after `ask_user`). No LLM router is used.
+`PartiComposition` builds the product prompt with `SessionPromptBuilder(new SkillLoader(source), new KeywordSkillRouter(source))`. In Rhino the source is `EmbeddedResourceSkillSource` over the plugin assembly; in tests it is `FileSystemSkillSource` over `prompts` (the folder containing `parti-foundations`). The builder runs once per session entry call (a new message, a follow-up, or a resume after `ask_user`). No LLM router is used.
 
 If the bundle cannot be read, the session uses `PartiComposition.FallbackSystemPrompt`, a one-paragraph prompt that keeps the untrusted-data rule. An explicit system prompt passed to the composition replaces the bundle.
 
@@ -155,12 +149,25 @@ The Layer 0 tool catalogue lists exactly the tools the product registers, in the
 To add a new sub-skill called `parti-example`:
 
 1. **Create the directory.** `prompts/parti-foundations/parti-example/`.
-2. **Write `SKILL.md`.** At the root of the new directory. Include a YAML frontmatter block with `name`, `version`, and `triggers` (one trigger per line). The body is the guidance the model reads when the sub-skill is active. It is appended to Layer 0 in the same chat loop, so it must not tell the model to reply only in JSON or that its output is hidden from the user: replies are plain text and pillar results are stored with `parti_record_decomposition` (enforced by `ProductPrompt_RoutedSubSkillsHaveNoJsonOnlyDirective`).
-3. **Add references and templates if needed.** Under `references/` and `templates/` in the sub-skill directory. Markdown for references, JSON for templates. Keep them small and single-purpose; any Layer 2 file should be useful on its own.
-4. **Update Layer 0 triggers.** Add a one-line entry for `parti-example` to the Layer 1 sub-skill index in `prompts/parti-foundations/SKILL.md`. The entry is what the router reads to decide when to load the sub-skill.
-5. **Verify the router sees it.** Run the router fixture tests under `tests/Parti.Core.Tests/Prompts/` with a message that should trigger the new sub-skill. Confirm `SkillRouter` loads `parti-example/SKILL.md`.
+2. **Write `SKILL.md`.** At the root of the new directory. Include a YAML frontmatter block with required `title`, a `version`, and an inline `tags` list. Multi-line trigger lists are not supported. Use this copyable example:
+
+```markdown
+---
+title: parti-example
+version: 0.1.0
+tags: [exampleworkflow]
+---
+# Example workflow
+Help the user explain their example workflow before proposing canvas edits.
+```
+
+The body is the guidance the model reads when the sub-skill is active. It is appended to Layer 0 in the same chat loop, so it must not tell the model to reply only in JSON or that its output is hidden from the user: replies are plain text and pillar results are stored with `parti_record_decomposition` (enforced by `ProductPrompt_RoutedSubSkillsHaveNoJsonOnlyDirective`).
+
+3. **Add references and templates if needed.** Under `references/` and `templates/` in the sub-skill directory. Markdown for references, JSON for templates. Keep them small and single-purpose. These files are not currently retrieved by the product chat.
+4. **Update Layer 0 triggers.** Add a one-line entry for `parti-example` to the Layer 1 sub-skill index in `prompts/parti-foundations/SKILL.md`. The entry documents the skill for the model; the router reads `tags` from the sub-skill manifest.
+5. **Verify the router sees it.** Run the router fixture tests under `tests/Parti.Core.Tests/Prompts/` with a message that should trigger the new sub-skill. Confirm `KeywordSkillRouter` selects `parti-example` and `SkillLoader` loads its body. `DocumentedSkillTests.AddingSubSkill_DocumentedManifestLoadsAndRoutes` exercises the example above with `FileSystemSkillSource` rooted at a folder containing `parti-foundations`.
 6. **Rebuild.** `dotnet build src/Parti.Components/Parti.Components.csproj`. The MSBuild glob picks up new files automatically, no csproj edit needed.
-7. **Verify the resource landed.** Inspect `Parti.Components.dll` manifest resource names and confirm `Parti.Prompts.parti-foundations/parti-example/SKILL.md` is present.
+7. **Verify the resource landed.** Inspect `Parti.dll` (or its `Parti.gha` copy) manifest resource names and confirm `Parti.Prompts.parti-foundations/parti-example/SKILL.md` is present.
 
 No code change is required to register a new sub-skill beyond the content files above. The router and loader discover sub-skills by walking the embedded resource namespace, not by reading a static registry.
 
@@ -215,7 +222,7 @@ The rules:
 - **Drop of 5% to 10%** requires maintainer discussion in the PR. Usually held.
 - **Drop greater than 10%** requires explicit maintainer sign-off with rationale written into the PR body.
 
-The eval suite lives at `tests/Parti.Core.Evals/` and runs in CI. For the exact fixture format and scoring methodology, see [EVAL-v0.1.md](EVAL-v0.1.md).
+The eval suite lives at `tests/Parti.Eval.v01/` and runs in CI. For the exact fixture format and scoring methodology, see [EVAL-v0.1.md](EVAL-v0.1.md).
 
 New sub-skills should ship with at least three fixture tests that trigger the router to load them. A sub-skill with no fixtures is a PR blocker.
 
@@ -243,7 +250,7 @@ Through v0.8.4, the canonical prompt was `prompts/system_v0.6.md`, a single file
 
 In v0.8.5 it was moved to `prompts/deprecated/system_v0.6.md` with a deprecation header prepended and kept as an embedded resource for one release cycle.
 
-It was removed on 2026-09-27, together with its embedded resource and `SystemPromptLoader`. The product reads only the 3-layer bundle. The old file is available in git history.
+It was removed on 2026-09-27, together with its embedded resource and `SystemPromptLoader`. The product reads only the 3-layer bundle. The old file is not included in this public checkout.
 
 ---
 

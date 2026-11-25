@@ -1,7 +1,7 @@
 # GH fixtures (Parti Eval v0.2, planned)
 
-Folder for real `.gh` fixtures that drive Parti's v0.7 eval harness against a
-live Rhino 8 session. Complement to `../fixtures/`, which holds the hermetic
+Planned folder for real `.gh` fixtures against a live Rhino 8 session.
+There is currently no live `.gh` runner and no CI schema-validation job. Complement to `../fixtures/`, which holds the hermetic
 JSON fixtures used by v0.1.
 
 ## Quickstart
@@ -10,9 +10,10 @@ To add a fixture:
 
 1. Copy `000-example/` to a new `<NNN>-<slug>/` folder. Pick the next free id.
 2. Replace `before.gh`, `after.gh`, and `fixture.json` with the real artefacts
-   (see `../../../docs/GH-FIXTURE-SPEC.md` for the recording procedure).
-3. Run the build. CI validates `fixture.json` against `schema.json` and the
-   v0.7 runner exercises the triple against a live Rhino.
+   (see [`docs/GH-FIXTURE-SPEC.md`](../../../docs/GH-FIXTURE-SPEC.md) for the recording procedure).
+3. Manually validate `fixture.json` against `schema.json` and open both `.gh`
+   files in Rhino to inspect them. Building the repository does neither of these
+   checks; automated validation and a live runner remain planned.
 
 The full schema, predicate vocabulary, difficulty rubric, and anti-pattern list
 live in `docs/GH-FIXTURE-SPEC.md`. Do not duplicate those here — edit one place.

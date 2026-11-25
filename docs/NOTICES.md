@@ -24,7 +24,22 @@ this file will be updated to credit the original authors on a per-file basis.
 
 ## Upstream notices and licenses ported with code
 
-_None yet. This section will be populated when actual code is imported._
+### SmartHopper — LGPL-3.0-or-later
+
+Parti includes code ported or adapted from
+[SmartHopper](https://github.com/architects-toolkit/SmartHopper), including provider
+contracts, interaction types, the Anthropic provider and conversation-session
+code. The per-file source mapping is maintained in
+[ATTRIBUTION.md](../ATTRIBUTION.md#smarthopper-lgpl-30-or-later); adapted files retain
+SPDX and port-attribution headers. See [LICENSE](../LICENSE) and
+[COPYING.LESSER](../COPYING.LESSER) for the repository license texts.
+
+## Fixture license
+
+The fixtures and predicate code are distributed under the repository's
+**LGPL-3.0-or-later** license. No separate MIT or MIT-equivalent fixture grant is
+provided in this repository. Any different grant would require an explicit
+licensing decision by the rights holders.
 
 ## Runtime dependencies
 
